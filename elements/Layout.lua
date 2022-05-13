@@ -139,7 +139,7 @@ function Layout:Render(gui, new_id, data_context, layout)
   end
   if self.style.background then
     if self.style.border then
-      GuiZSetForNextWidget(gui, z - 1)
+      GuiZSetForNextWidget(gui, z + 1)
       GuiImageNinePiece(gui, new_id(), x + self.border_size, y + self.border_size, inner_width, inner_height)
     end
   end
