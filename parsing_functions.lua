@@ -682,6 +682,7 @@ return {
   parse_style_declaration_block = parse_style_declaration_block,
   parse_style_rulesets = parse_style_rulesets,
   parse_style_selector = parse_style_selector,
+  read_binding_target = read_binding_target,
   convert_css_comments_to_spaces = convert_css_comments_to_spaces,
   peek_style_binding_start = peek_style_binding_start,
 }

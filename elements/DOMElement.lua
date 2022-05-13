@@ -10,7 +10,7 @@ function get_data_from_binding_chain(data_context, binding_target_chain)
      -- e.g.: one.two.three
      -- when 'one' is a number, trying to access a number value
     data_context = data_context[current_target]
-    if not data_context then
+    if data_context == nil then
       error("Bound data variable not found: '" .. tostring(current_target) .."'", 2)
     end
   end
@@ -104,7 +104,6 @@ end
 local DOMElement = new_class("DOMElement", function(self, xml_element, data_context)
   self.name = xml_element.name
   self.class = xml_element.attr.class or ""
-  self.debug = not not xml_element.attr.debug
   self.data_context = data_context
   local style = {}
   local style_raw = {}
@@ -151,11 +150,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
       if not attr[key] then
         return
       end
-      if attr[key].type == "value" then
-        return attr[key].value
-      elseif attr[key].type == "binding" then
-        return self.data_context[attr[key].target]
-      end
+      return get_value_from_chain_or_not(data_context, attr[key])
     end,
     __newindex = function(t, key, value)
       -- Let us set it once in the constructor but not afterwards
@@ -172,6 +167,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
   if xml_element.attr.forEach then
     self.loop = parser.parse_loop(string_buffer(xml_element.attr.forEach))
   end
+  self:ReadAttribute(xml_element, "debug", false)
 end)
 
 DOMElement.default_style = {
@@ -232,7 +228,7 @@ function DOMElement:ReadAttribute(xml_element, name, value_default, converter, v
     value = self.data_context[xml_element.attr[":" .. name]]
     out = {
       type = "binding",
-      target = xml_element.attr[":" .. name]
+      target_chain = parser.read_binding_target(xml_element.attr[":" .. name])
     }
   elseif xml_element.attr[name] ~= nil then
     value = xml_element.attr[name]
@@ -254,7 +250,7 @@ function DOMElement:ReadAttribute(xml_element, name, value_default, converter, v
   if type(validator) == "function" then
     validator(name, value)
   end
-  return out
+  self.attr[name] = out
 end
 
 return DOMElement

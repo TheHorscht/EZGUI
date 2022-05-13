@@ -35,7 +35,7 @@ function Text:Render(gui, new_id, data_context, layout)
   GuiZSetForNextWidget(gui, z)
   GuiText(gui, x + self.style.padding_left, y + self.style.padding_top, text)
 
-  if self.debug then
+  if self.attr.debug then
     -- Debug rendering
     -- Red = margin
     -- Blue = padding

@@ -130,7 +130,7 @@ function Layout:Render(gui, new_id, data_context, layout)
       local child_width, child_height = child:GetDimensions(gui, data_context)
       local child_total_width = child_width + child.style.margin_left + child.style.margin_right
       local child_total_height = child_height + child.style.margin_top + child.style.margin_bottom
-      if self.debug then
+      if self.attr.debug then
         -- Content
         local x, y = self:GetPositionForWidget(child, child_width, child_height)
         render_debug_rect(x, y, child_width, child_height, "green")
@@ -149,7 +149,7 @@ function Layout:Render(gui, new_id, data_context, layout)
       GuiImageNinePiece(gui, new_id(), x + self.border_size, y + self.border_size, inner_width, inner_height)
     end
   end
-  if self.debug then
+  if self.attr.debug then
     -- Margins
     -- Top
     render_debug_rect(x - self.style.margin_left, y - self.style.margin_top, outer_width + self.style.margin_left + self.style.margin_right, self.style.margin_top, "red")
