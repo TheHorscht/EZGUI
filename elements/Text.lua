@@ -2,9 +2,14 @@ dofile_once("%PATH%/oop.lua")
 local parsers = dofile_once("%PATH%/parsing_functions.lua")
 local DOMElement = dofile_once("%PATH%/elements/DOMElement.lua")
 
+-- trim7 from http://lua-users.org/wiki/StringTrim
+local function trim(s)
+   return s:match("^()%s*$") and '' or s:match("^%s*(.*%S)")
+end
+
 local Text = new_class("Text", function(self, xml_element, data_context)
   super(xml_element, data_context)
-  self.value = parsers.parse_text(xml_element:text())
+  self.value = parsers.parse_text(trim(xml_element:text()))
 end, DOMElement)
 
 function Text:GetDimensions(gui, data_context)
