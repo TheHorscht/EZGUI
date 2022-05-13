@@ -127,7 +127,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
           return (self.parent and self.parent.style[key]) or css_props[key].default
         else
           -- Get default
-          local default = self.default_style[key]
+          local default = self.default_style[key] or css_props[key].default
           local superclass = self.__superclass
           while default == nil and superclass do
             default = superclass.default_style[key]
