@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EZGUI Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="navigation">
+    <span>EZGUI Reference</span>
+    <a href="#Elements">Elements</a>
+    <div class="submenu">
+      <a href="#Layout">Layout</a>
+      <a href="#Button">Button</a>
+      <a href="#Image">Image</a>
+      <a href="#Slider">Slider</a>
+      <a href="#Text">Text</a>
+    </div>
+    <a href="#Properties">Properties</a>
+    <div class="submenu">
+      <a href="#css_padding">padding</a>
+      <a href="#css_padding_left">padding_left</a>
+      <a href="#css_padding_top">padding_top</a>
+      <a href="#css_padding_right">padding_right</a>
+      <a href="#css_padding_bottom">padding_bottom</a>
+      <a href="#css_margin">margin</a>
+      <a href="#css_margin_left">margin_left</a>
+      <a href="#css_margin_top">margin_top</a>
+      <a href="#css_margin_right">margin_right</a>
+      <a href="#css_margin_bottom">margin_bottom</a>
+      <a href="#css_direction">direction</a>
+    </div>
+  </div>
+  <div class="pageWrapper">
+    <h1>EZGUI Reference</h1>
+    <div class="elements">
+      <h2 id="Elements">Elements</h2>
+      <div class="element" id="Layout" data-noclear>
+        <h3 class="elementName">Layout</h2>
+        <span class="elementDescription">Responsible for positioning items, either horizontally or vertically (set by the CSS property <a href="#css_direction" class="cssAttributeLink">direction</a>)</span>
+        <h4>Attributes</h4>
+        <div class="attribute">
+          <h4 class="attributeName">debug</h4>
+          <div class="attributeValues">[ boolean ]</div>
+          <span class="attributeDescription">Renders a debug overlay for padding and content</span>
+        </div>
+        <div class="attribute">
+          <h4 class="attributeName">some_other_attribute</h4>
+          <div class="attributeValues">[ string ]</div>
+          <span class="attributeDescription">Whatever</span>
+        </div>
+      </div>
+      <div class="element" id="Button" data-noclear>
+        <h3 class="elementName">Button</h2>
+        <span class="elementDescription">Despite it's name it only supports text right now.</span>
+      </div>
+      <div class="element" id="Image" data-noclear>
+        <h3 class="elementName">Image</h2>
+        <span class="elementDescription">Can you guess what this does?</span>
+      </div>
+      <div class="element" id="Slider" data-noclear>
+        <h3 class="elementName">Slider</h2>
+        <span class="elementDescription">I think you know what a slider is.</span>
+      </div>
+      <div class="element" id="Text" data-noclear>
+        <h3 class="elementName">Text</h2>
+        <span class="elementDescription">Self explanatory, really.</span>
+      </div>
+    </div>
+    <div class="elements">
+      <h2 id="Properties">CSS Properties</h2>
+      <div class="element" id="css_padding" data-noclear>
+        <h3 class="elementName">padding</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription">Shortcut for setting <a href="#css_padding_left" class="cssAttributeLink">padding_left</a>, <a href="#css_padding_top" class="cssAttributeLink">padding_top</a>, <a href="#css_padding_right" class="cssAttributeLink">padding_right</a>, <a href="#css_padding_bottom" class="cssAttributeLink">padding_bottom</a></div>
+        </div>
+        <div>
+          <div class="attributeValues">[ number, number ]</div>
+          <div class="cssAttributeDescription">Shortcut for <a href="#css_padding_left" class="cssAttributeLink">padding_left</a> + <a href="#css_padding_right" class="cssAttributeLink">padding_right</a>, <a href="#css_padding_top" class="cssAttributeLink">padding_top</a> + <a href="#css_padding_bottom" class="cssAttributeLink">padding_bottom</a></div>
+        </div>
+        <div>
+          <div class="attributeValues">[ number, number, number ]</div>
+          <div class="cssAttributeDescription">Shortcut for <a href="#css_padding_top" class="cssAttributeLink">padding_top</a>, <a href="#css_padding_left" class="cssAttributeLink">padding_left</a> + <a href="#css_padding_right" class="cssAttributeLink">padding_right</a>, <a href="#css_padding_bottom" class="cssAttributeLink">padding_bottom</a></div>
+        </div>
+        <div>
+          <div class="attributeValues">[ number, number, number, number ]</div>
+          <div class="cssAttributeDescription">Shortcut for <a href="#css_padding_top" class="cssAttributeLink">padding_top</a>, <a href="#css_padding_right" class="cssAttributeLink">padding_right</a>, <a href="#css_padding_bottom" class="cssAttributeLink">padding_bottom</a>, <a href="#css_padding_left" class="cssAttributeLink">padding_left</a></div>
+        </div>
+        <span class="propertyDescription">Distance from the inside of the border of an element to the contents of it.</span>
+      </div>
+      <div class="element" id="css_padding_left" data-noclear>
+        <h3 class="elementName">padding_left</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_padding" class="cssAttributeLink">padding</a>.</span>
+      </div>
+      <div class="element" id="css_padding_top" data-noclear>
+        <h3 class="elementName">padding_top</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_padding" class="cssAttributeLink">padding</a>.</span>
+      </div>
+      <div class="element" id="css_padding_right" data-noclear>
+        <h3 class="elementName">padding_right</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_padding" class="cssAttributeLink">padding</a>.</span>
+      </div>
+      <div class="element" id="css_padding_bottom" data-noclear>
+        <h3 class="elementName">padding_bottom</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_padding" class="cssAttributeLink">padding</a>.</span>
+      </div>
+      <div class="element" id="css_margin" data-noclear>
+        <h3 class="elementName">margin</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription">Shortcut for all sides</div>
+        </div>
+        <div>
+          <div class="attributeValues">[ number, number ]</div>
+          <div class="cssAttributeDescription">Shortcut for left/right and top/bottom</div>
+        </div>
+        <div>
+          <div class="attributeValues">[ number, number, number ]</div>
+          <div class="cssAttributeDescription">Shortcut for top, sides, bottom</div>
+        </div>
+        <div>
+          <div class="attributeValues">[ number, number, number, number ]</div>
+          <div class="cssAttributeDescription">Shortcut for top, right, bottom, left</div>
+        </div>
+        <span class="propertyDescription">Distance from the outside of the border of an element to the containing element.</span>
+      </div>
+      <div class="element" id="css_margin_left" data-noclear>
+        <h3 class="elementName">margin_left</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_margin" class="cssAttributeLink">margin</a>.</span>
+      </div>
+      <div class="element" id="css_margin_top" data-noclear>
+        <h3 class="elementName">margin_top</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_margin" class="cssAttributeLink">margin</a>.</span>
+      </div>
+      <div class="element" id="css_margin_right" data-noclear>
+        <h3 class="elementName">margin_right</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_margin" class="cssAttributeLink">margin</a>.</span>
+      </div>
+      <div class="element" id="css_margin_bottom" data-noclear>
+        <h3 class="elementName">margin_bottom</h3>
+        <div>
+          <div class="attributeValues">[ number ]</div>
+          <div class="cssAttributeDescription"></div>
+        </div>
+        <span class="propertyDescription">See <a href="#css_margin" class="cssAttributeLink">margin</a>.</span>
+      </div>
+      <div class="element" id="css_direction" data-noclear>
+        <h3 class="elementName">direction</h3>
+        <div>
+          <div class="attributeValues">[ horizontal | vertical ]</div>
+          <div class="cssAttributeDescription">Effect depends on the element.</div>
+        </div>
+        <span class="propertyDescription">For layouts it determines the direction in which items are laid out.</span>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
