@@ -61,7 +61,7 @@ function Button:Render(gui, new_id, data_context, layout)
   -- !! ATTENTION !! There is a bug with layouting (in ScrollContainer only?), where it takes the X scale into account when expanding the layout vertically instead of the Y scale
   -- This is for making sure the ScrollLayout expands downwards with padding
   -- Draw an invisible image with a specific size to force the layout to use it's size, since the NinePiece by itself doesn't work with layouts somehow
-  GuiImage(gui, new_id(), x, y, "%PATH%/invis_10x10.png", 0.001, total_height / 10, total_height / 10)
+  GuiImage(gui, new_id(), x, y, "data/debug/empty.png", 0.001, total_height, total_height)
 end
 
 return Button

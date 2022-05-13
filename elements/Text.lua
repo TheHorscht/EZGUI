@@ -43,8 +43,13 @@ function Text:Render(gui, new_id, data_context, layout)
     local function render_debug_rect(x, y, width, height, color)
       if width > 0 and height > 0 then
         GuiZSetForNextWidget(gui, z - 50)
-        GuiImage(gui, 9999, x, y, "%PATH%/" .. color .. "_half_alpha_10x10.png", 1, width / 10, height / 10)
-        -- GuiImage(gui, new_id(), x + 1, y + 1, "mods/XMLGUI/" .. color .. "_half_alpha_10x10.png", 1, (width - 2) / 10, (height - 2) / 10)
+        local r, g, b = unpack(({
+          red = { 1, 0, 0 },
+          green = { 0, 1, 0 },
+          blue = { 0, 0, 1 },
+        })[color])
+        GuiColorSetForNextWidget(gui, r, g, b, 1)
+        GuiImage(gui, 9999, x, y, "data/debug/whitebox.png", 0.5, width / 20, height / 20)
       end
     end
     -- Margins
