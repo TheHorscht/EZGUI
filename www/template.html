@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EZGUI Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="navigation">
+    <span>EZGUI Reference</span>
+    <a href="#Elements">Elements</a>
+    <div class="submenu">
+      {{#each elements}}
+      <a href="#{{name}}">{{name}}</a>
+      {{/each}}
+    </div>
+    <a href="#Properties">Properties</a>
+    <div class="submenu">
+      {{#each cssProperties}}
+      <a href="#css_{{name}}">{{name}}</a>
+      {{/each}}
+    </div>
+  </div>
+  <div class="pageWrapper">
+    <h1>EZGUI Reference</h1>
+    <div class="elements">
+      <h2 id="Elements">Elements</h2>
+      {{#each elements}}
+      <div class="element" id="{{name}}" data-noclear>
+        <h3 class="elementName">{{name}}</h2>
+        <span class="elementDescription">{{description description}}</span>
+        {{#if attributes}}
+        <h4>Attributes</h4>
+        {{/if}}
+        {{#each attributes}}
+        <div class="attribute">
+          <h4 class="attributeName">{{name}}</h4>
+          {{#each values}}
+          <div class="attributeValues">[ {{this}} ]</div>
+          {{/each}}
+          <span class="attributeDescription">{{description description}}</span>
+        </div>
+        {{/each}}
+      </div>
+      {{/each}}
+    </div>
+    <div class="elements">
+      <h2 id="Properties">CSS Properties</h2>
+      {{#each cssProperties}}
+      <div class="element" id="css_{{name}}" data-noclear>
+        <h3 class="elementName">{{name}}</h3>
+        {{#each values}}
+        <div>
+          <div class="attributeValues">[ {{concat types}} ]</div>
+          <div class="cssAttributeDescription">{{#if description}}{{description description}}{{/if}}</div>
+        </div>
+        {{/each}}
+        <span class="propertyDescription">{{description description}}</span>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "www",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TheHorscht <realhorscht+github@gmail.com> (https://github.com/TheHorscht)",
+  "license": "ISC",
+  "dependencies": {
+    "fs-extra": "^10.1.0",
+    "gh-pages": "^4.0.0",
+    "handlebars": "^4.7.7"
+  }
+}

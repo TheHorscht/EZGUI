@@ -49,12 +49,12 @@ Also responsible for rendering a border, if you like.
 ## Button
 Draws a button with text (probably also Images in the future) that you can click.
 ### Attributes:
-- `@click` - function
+- `@click`:function a function to call. It uses a primitive lua function parser and therefore only supports a syntax like this: `function_name('a string', 5)`
 
 ## Image
 Render an image.
 ### Properties:
-- `src` - string - The path to the image file
+- `src`:string - The path to the image file
 
 ## Slider
 Render a slider.
@@ -75,3 +75,9 @@ The framework uses a custom implementation of CSS based solely on my own assumpt
 - Child selector: `Layout > Button`
 
 And of course you can combine them like: `Layout.classname > Button Text.otherclass`
+
+Margin and padding should work just like the CSS Box Model https://www.w3schools.com/css/css_boxmodel.asp
+
+Except that there's no border except for the Layout element, which has an optional fixed border style and width of 3.
+
+![alt text](www/assets/box_model.png "Title")
