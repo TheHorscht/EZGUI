@@ -1,2 +1,4 @@
-www/node_modules
+**/node_modules
 www/generated
+**/dist
+.env
