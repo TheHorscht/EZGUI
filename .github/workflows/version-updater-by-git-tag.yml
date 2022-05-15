@@ -30,7 +30,7 @@ jobs:
           newVersion=${{ steps.vars.outputs.tag }}
           #sed -i 's/$oldVersion/$newVersion/g' EZGUI.lua
 
-          cat EZGUI.lua | sed -i 's/v[0-9].[0-9].[0-9]/\1$newVersion/g'
+          cat EZGUI.lua | sed -i 's/"v[0-9].[0-9].[0-9]"/$newVersion/1'
 
           git config --global user.name "github workflow version-updater-by-git-tag.yml"
           git config --global user.email "e@mail.com"
