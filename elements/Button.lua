@@ -1,8 +1,8 @@
 dofile_once("data/scripts/lib/utilities.lua")
-dofile_once("%PATH%/oop.lua")
-dofile_once("%PATH%/parsing_functions.lua")
-local string_buffer = dofile_once("%PATH%/string_buffer.lua")
-local DOMElement = dofile_once("%PATH%/elements/DOMElement.lua")
+dofile_once("%PATH%oop.lua")
+dofile_once("%PATH%parsing_functions.lua")
+local string_buffer = dofile_once("%PATH%string_buffer.lua")
+local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
 
 local Button = new_class("Button", function(self, xml_element, data_context)
   super(xml_element, data_context)

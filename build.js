@@ -24,7 +24,12 @@ const ignore_list = [
   'www/*',
   '*.json',
   '*.js',
-  'dist'
+  'dist',
+  'env.lua',
+  '*.md',
+  'unit_test.lua',
+  'unit_tests.lua',
+  'xxx.lua',
 ];
 // Config end
 

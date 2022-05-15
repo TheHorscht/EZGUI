@@ -1,5 +1,5 @@
-local utils = dofile_once("%PATH%/utils.lua")
-local string_buffer = dofile_once("%PATH%/string_buffer.lua")
+local utils = dofile_once("%PATH%utils.lua")
+local string_buffer = dofile_once("%PATH%string_buffer.lua")
 
 local dom_element_names = {
   "Button", "Image", "Layout", "Slider", "Text",

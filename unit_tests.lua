@@ -29,9 +29,9 @@
 -- end
 
 
-local pretty = dofile_once("%PATH%/lib/pretty.lua")
-local expect = dofile_once("%PATH%/unit_test.lua")
-local parser = dofile_once("%PATH%/parsing_functions.lua")
+local pretty = dofile_once("%PATH%lib/pretty.lua")
+local expect = dofile_once("%PATH%unit_test.lua")
+local parser = dofile_once("%PATH%parsing_functions.lua")
 local parsed_loop = parser.parse_loop("shid in yooo")
 expect(parsed_loop.bind_variable).to_be("shid")
 expect(parsed_loop.binding_target).to_be("yooo")
@@ -84,10 +84,10 @@ assert(does_selector_match({ name = "Text" }, { element_name = "Button" }) == fa
 --]]
 
 
-local parser = dofile_once("%PATH%/parsing_functions.lua")
-local pretty = dofile_once("%PATH%/lib/pretty.lua")
-local css = dofile_once("%PATH%/css.lua")
-local nxml = dofile_once("%PATH%/lib/nxml.lua")
+local parser = dofile_once("%PATH%parsing_functions.lua")
+local pretty = dofile_once("%PATH%lib/pretty.lua")
+local css = dofile_once("%PATH%css.lua")
+local nxml = dofile_once("%PATH%lib/nxml.lua")
 local select = parser.parse_style_selector
 
 local s = select(" Layout > .cla > Button ")
@@ -223,7 +223,7 @@ expect(css.calculate_selector_specificity(select("  Button.class Layout.class Te
 expect(css.calculate_selector_specificity(select("  Button.class Layout Text.class  "))).to_be(23)
 expect(css.calculate_selector_specificity(select("  Button.class .class Text.class  "))).to_be(32)
 
-local string_buffer = dofile_once("%PATH%/string_buffer.lua")
+local string_buffer = dofile_once("%PATH%string_buffer.lua")
 
 local function is_number(str)
   local buffer = string_buffer(str)
@@ -294,7 +294,7 @@ assert(is_table_equal(tokens, {
   { type = "identifier", value = "dood", },
 }))
 
-local lu = dofile_once("lib/EZGUI/lib/luaunit.lua")
+local lu = dofile_once("lib/luaunit.lua")
 teststring = nil -- This is a variable in data/scripts/lib/utilities.lua we need to clear so luaunit doesn't pick it up as a test
 
 function testStuff()
