@@ -2,6 +2,8 @@ const bool = typeof true;
 const string = typeof "";
 const number = typeof 0;
 const direction = "horizontal | vertical";
+const align_horizontal = "left | center | right";
+const align_vertical = "top | center | bottom";
 
 module.exports = {
   // DOM Elements
@@ -43,14 +45,25 @@ module.exports = {
   // CSS Properties
   cssProperties: [
     {
+      name: "align_items_horizontal",
+      values: [
+        { types: [align_horizontal] },
+      ],
+      description: "Specifies horizontal alignment of items in a Layout when ^direction is vertical.",
+    },
+    {
+      name: "align_items_vertical",
+      values: [
+        { types: [align_vertical] },
+      ],
+      description: "Specifies vertical alignment of items in a Layout when ^direction is horizontal.",
+    },
+    {
       name: "padding",
       values: [
         { types: [number], description: "Shortcut for setting ^padding_left, ^padding_top, ^padding_right, ^padding_bottom" },
         { types: [number, number], description: "Shortcut for ^padding_left + ^padding_right, ^padding_top + ^padding_bottom" },
-        // { types: [number, number], description: "Shortcut for left/right and top/bottom" },
-        // { types: [number, number, number], description: "Shortcut for top, sides, bottom" },
         { types: [number, number, number], description: "Shortcut for ^padding_top, ^padding_left + ^padding_right, ^padding_bottom" },
-        // { types: [number, number, number, number], description: "Shortcut for top, right, bottom, left" },
         { types: [number, number, number, number], description: "Shortcut for ^padding_top, ^padding_right, ^padding_bottom, ^padding_left" },
       ],
       description: "Distance from the inside of the border of an element to the contents of it.",
