@@ -6,7 +6,7 @@ on:
 
 jobs:
   version-updater:
-    name: Insert verion of git tag into files
+    name: Insert version of git tag into files
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -26,9 +26,12 @@ jobs:
 
       - name: Update EZGUI.lua version
         run: |
-          oldVersion=(cat EZGUI.lua | grep v[0-9].[0-9].[0-9])
-          newVersion=${{ steps.vars.outputs.tag }}
-          sed -i 's/$oldVersion/$newVersion/g' EZGUI.lua
+          #oldVersion=$(cat EZGUI.lua | grep v[0-9].[0-9].[0-9])
+          #newVersion=${{ steps.vars.outputs.tag }}
+          #sed -i 's/$oldVersion/$newVersion/g' EZGUI.lua
+
+          cat EZGUI.lua | sed -i 's/$v[0-9].[0-9].[0-9]/$newVersion/g' EZGUI.lua
+
           git config --global user.name "github workflow version-updater-by-git-tag.yml"
           git config --global user.email "e@mail.com"
           git add EZGUI.lua
