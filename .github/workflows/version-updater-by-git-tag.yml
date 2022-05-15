@@ -26,10 +26,10 @@ jobs:
 
       - name: Update EZGUI.lua version
         run: |
-          oldVersion=$(cat EZGUI.lua | grep v[0-9].[0-9].[0-9])
+          oldVersion=\"$(cat EZGUI.lua | grep v[0-9].[0-9].[0-9])\"
           echo $oldVersion
 
-          newVersion=${{ steps.vars.outputs.tag }}
+          newVersion=\"${{ steps.vars.outputs.tag }}\"
           echo $newVersion
 
           sed -i 's/$oldVersion/$newVersion/g' EZGUI.lua
