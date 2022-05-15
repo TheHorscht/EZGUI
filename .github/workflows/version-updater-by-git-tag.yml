@@ -1,0 +1,58 @@
+name: Set version pushed by bit tag into associated files
+on:
+  push:
+    tags: '**' 
+    
+    jobs:
+
+  lua-unit-testing-on-ubuntu-latest:
+
+    name: "LuaUnit on Ubuntu-latest"
+
+    runs-on: ubuntu-latest
+    
+steps:
+
+      - name: Checkout code
+
+        uses: actions/checkout@v2
+
+      - name: Set Version ENV
+
+        run: echo "::set-env name=VERSION::'$(cat VERSION)"
+
+      - name: Update version in 'package.json' and push changes
+
+        run: |
+
+          old_str="\"version\": \"1.2.3\""
+
+          new_str="\"version\": \"1.3.0\""
+
+          sed -i 's/$old_str/$new_str/g' package.json
+
+          git config --global user.name "you username"
+
+          git config --global user.email "you email"
+
+          git add package.json
+
+          git commit -m "Update version"
+
+          git push
+
+      - name: Create Release
+
+        uses: actions/create-release@v1
+
+        env:
+
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        with:
+
+          tag_name: ${{ env.VERSION }}
+
+          release_name: ${{ env.VERSION }}
+
+          commitish: master
