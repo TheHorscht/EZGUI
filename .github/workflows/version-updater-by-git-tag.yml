@@ -27,10 +27,10 @@ jobs:
       - name: Update EZGUI.lua version
         run: |
           #oldVersion=$(cat EZGUI.lua | grep v[0-9].[0-9].[0-9])
-          #newVersion=${{ steps.vars.outputs.tag }}
+          newVersion=${{ steps.vars.outputs.tag }}
           #sed -i 's/$oldVersion/$newVersion/g' EZGUI.lua
 
-          cat EZGUI.lua | sed -i 's/$v[0-9].[0-9].[0-9]/$newVersion/g' EZGUI.lua
+          cat EZGUI.lua | sed -i '/v[0-9].[0-9].[0-9]/$newVersion/g'
 
           git config --global user.name "github workflow version-updater-by-git-tag.yml"
           git config --global user.email "e@mail.com"
