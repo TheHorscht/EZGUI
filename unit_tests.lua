@@ -286,3 +286,22 @@ assert(is_table_equal(tokens, {
   { type = "number", value = -0.25, },
   { type = "identifier", value = "Hello", },
 }))
+
+local tokens = parser.parse_tokens("dood #FF00FFFF dood")
+assert(is_table_equal(tokens, {
+  { type = "identifier", value = "dood", },
+  { type = "color", value = { r = 1, g = 0, b = 1, a = 1 }, },
+  { type = "identifier", value = "dood", },
+}))
+
+local lu = dofile_once("lib/EZGUI/lib/luaunit.lua")
+teststring = nil -- This is a variable in data/scripts/lib/utilities.lua we need to clear so luaunit doesn't pick it up as a test
+
+function testStuff()
+  lu.assertEquals(parser.read_hex_color("  #FF00FFFF"), { r = 1, g = 0, b = 1, a = 1 })
+  lu.assertEquals(parser.read_hex_color("  #FF00FFFF  "), { r = 1, g = 0, b = 1, a = 1 })
+  lu.assertEquals(parser.read_hex_color("  #FF00FF"), { r = 1, g = 0, b = 1, a = 1 })
+  lu.assertEquals(parser.read_hex_color("  #FF00FF  "), { r = 1, g = 0, b = 1, a = 1 })
+end
+
+lu.LuaUnit.run()
