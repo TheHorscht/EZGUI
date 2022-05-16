@@ -1,5 +1,5 @@
 --[[ 
-  EZGUI v9.7.8
+  EZGUI v9.7.7
 ]]
 
 local _ModTextFileGetContent = ModTextFileGetContent
