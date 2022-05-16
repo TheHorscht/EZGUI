@@ -17,15 +17,15 @@ jobs:
 
       #- name: Set Version ENV
       #  run: echo "::set-env name=VERSION::'$(cat VERSION)"
-      - name: Set output
+      - name: Get tag version v[0-9].[0-9].[0-9]
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - name: Check output
-        env:
-          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-        run: |
-          echo $RELEASE_VERSION
-          echo ${{ steps.vars.outputs.tag }}
+      #- name: Check output
+      #  env:
+      #    RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+      #  run: |
+      #    echo $RELEASE_VERSION
+      #    echo ${{ steps.vars.outputs.tag }}
 
       - name: Update version files
         run: |
@@ -41,7 +41,10 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add EZGUI.lua
-          git commit -m "Update version"
+          git add package.json
+          git add changelog.txt
+
+          git commit -m "Update version files"
           git push
 
       # - name: Update version in 'package.json' and push changes
