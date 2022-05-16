@@ -1,6 +1,6 @@
 {
   "name": "ezgui",
-  "version": "9.7.7",
+  "version": "0.1.1",
   "description": "You make an XML file that contains your GUI definition, just like single file components in Vue.js.\r A root Layout element is mandatory.\r ```xml\r <Layout>\r   <Button @click=\"a_method('with a string arg')\">Click me!</Button>\r   <Text forEach=\"element in collection\">{{ element }}</Text>\r </Layout>\r <Style>\r Layout {\r   direction: vertical;\r   padding: 2;\r }\r Layout > Button {\r   margin: [button_margin]; // Can also databind to CSS properties!\r }\r </Style>\r ```\r Then in your init.lua you can render this GUI:\r ```lua\r -- Dofiling EZGUI.lua returns a table with an init function that you need to call and pass in the path to the library, which in turn will return a render function you can call to render a GUI\r local render_gui = dofile_once(\"mods/your_mod_id/lib/EZGUI/EZGUI.lua\").init(\"mods/your_mod_id/lib/EZGUI\")\r -- This is the data context table, here lives your data that you can bind to\r local data = {\r   collection = { \"Bloo\", \"Blaa\", \"Blee\" },\r   button_margin = 5,\r   -- Methods defined here can be used in @click, arg1 is the data_context itself, arg2 the element that was clicked, arg3 the first custom arg\r   a_method = function(data, element, arg1)\r     print(arg1)\r   end,\r }",
   "main": "build.js",
   "directories": {
