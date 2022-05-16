@@ -1,4 +1,4 @@
-UNRELEASED:
+v9.7.7:
 - blabla
 - blublu
 - foo
