@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          ref: develop
 
       #- name: Set Version ENV
       #  run: echo "::set-env name=VERSION::'$(cat VERSION)"
@@ -30,6 +32,7 @@ jobs:
           echo $newVersion
           sed -i 's/\bv[0-9].[0-9].[0-9]\b/'"$newVersion"'/g' EZGUI.lua
 
+          #git branch develop
           git config --global user.name "github-actions"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add EZGUI.lua
