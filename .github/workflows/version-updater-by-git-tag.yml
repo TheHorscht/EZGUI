@@ -28,6 +28,7 @@ jobs:
           echo ${{ steps.vars.outputs.tag }}
 
       - name: Update EZGUI.lua version
+        with: ${{ secrets.GITHUB_TOKEN }}
         run: |
           newVersion='${{ steps.vars.outputs.tag }}'
           echo $newVersion
@@ -42,7 +43,7 @@ jobs:
           git config --global user.email "<>"
           git add EZGUI.lua
           git commit -m "Update version"
-          git push origin HEAD:develop
+          git push
 
       # - name: Update version in 'package.json' and push changes
       #   run: |
