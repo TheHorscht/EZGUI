@@ -1,4 +1,4 @@
-UNRELEASED:
+v1.3.5:
 - blabla
 - blublu
 - foo
