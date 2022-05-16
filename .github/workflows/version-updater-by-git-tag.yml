@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: develop
-          token: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/checkout@v2
+        #with:
+        #  ref: develop
+        #  token: ${{ secrets.GITHUB_TOKEN }}
 
       #- name: Set Version ENV
       #  run: echo "::set-env name=VERSION::'$(cat VERSION)"
@@ -34,11 +34,13 @@ jobs:
           sed -i 's/\bv[0-9].[0-9].[0-9]\b/'"$newVersion"'/g' EZGUI.lua
 
           #git branch develop
-          git config --global user.name "github-actions"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          #git config --global user.name "github-actions"
+          #git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "<>"
           git add EZGUI.lua
           git commit -m "Update version"
-          git push origin HEAD:develop
+          git push origin develop
 
       # - name: Update version in 'package.json' and push changes
       #   run: |
