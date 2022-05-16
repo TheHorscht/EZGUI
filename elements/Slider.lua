@@ -38,8 +38,12 @@ function Slider:Render(gui, new_id, data_context, layout)
     z = self:GetZ()
   end
   GuiZSetForNextWidget(gui, z)
-  data_context[self.binding_target] = GuiSlider(gui, new_id(), x - 2 + self.style.padding_left, y + self.style.padding_top, "", data_context[self.binding_target], self.min, self.max, self.default, 1, " ", self.width)
-  data_context[self.binding_target] = math.floor(data_context[self.binding_target])
+  local old_value = data_context[self.binding_target]
+  local new_value = GuiSlider(gui, new_id(), x - 2 + self.style.padding_left, y + self.style.padding_top, "", data_context[self.binding_target], self.min, self.max, self.default, 1, " ", self.width)
+  new_value = math.floor(new_value)
+  if new_value ~= old_value then
+    data_context[self.binding_target] = new_value
+  end
   GuiZSetForNextWidget(gui, z)
   GuiText(gui, x + self.width + 3 + self.style.padding_left, y - 1 + self.style.padding_top, text)
 end
