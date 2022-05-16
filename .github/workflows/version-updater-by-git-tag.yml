@@ -27,20 +27,20 @@ jobs:
           echo $RELEASE_VERSION
           echo ${{ steps.vars.outputs.tag }}
 
-      - name: Update EZGUI.lua version
+      - name: Update version files
         with: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          newVersion='${{ steps.vars.outputs.tag }}'
-          echo $newVersion
-          sed -i 's/\bv[0-9].[0-9].[0-9]\b/'"$newVersion"'/g' EZGUI.lua
+          newVersionWithV='${{ steps.vars.outputs.tag }}'
+          sed -i 's/\bv[0-9].[0-9].[0-9]\b/'"$newVersionWithV"'/g' EZGUI.lua
 
-          git show-ref
+          newVersionWithoutV=$(cut -c 2-6 <<< $newVersionWithV)
+          sed -i 's/"\b[0-9].[0-9].[0-9]\b"/'\"$newVersionWithoutV\"'/g' package.json
 
-          #git branch develop
-          #git config --global user.name "github-actions"
-          #git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "<>"
+          sed -i 's/UNRELEASED'\"$newVersionWithV\"'/g' changelog.txt
+
+          git config --global user.name "github-actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
           git add EZGUI.lua
           git commit -m "Update version"
           git push
