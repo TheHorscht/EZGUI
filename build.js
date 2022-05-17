@@ -24,7 +24,6 @@ const ignore_list = [
   'www/*',
   '*.json',
   '*.js',
-  'dist'
 ];
 // Config end
 
