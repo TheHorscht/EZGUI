@@ -2,6 +2,7 @@ v0.1.3:
 - Fix element not found error
 - Remove unit testing files from release
 - Implemented universal selector *
+- Add width/height CSS properties for elements (API not necessarily final)
 
 v0.1.2:
 - Entire area of buttons is now clickable, including the padding
