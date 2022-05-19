@@ -212,6 +212,34 @@ expect(css.does_selector_match(make_element([[
 </Layout>
 ]]), select("  Layout > Text  "))).to_be(true)
 
+expect(css.does_selector_match(make_element([[
+<Layout>
+  <Text class="class" />
+</Layout>
+]]), select("  Layout > *  "))).to_be(true)
+
+expect(css.does_selector_match(make_element([[
+<Layout>
+  <Text class="class" />
+</Layout>
+]]), select("  Layout *  "))).to_be(true)
+
+expect(css.does_selector_match(make_element([[
+<Layout>
+  <Button>
+    <Text class="class" />
+  </Button>
+</Layout>
+]]), select("  Layout *  "))).to_be(true)
+
+expect(css.does_selector_match(make_element([[
+<Layout>
+  <Button>
+    <Text class="class" />
+  </Button>
+</Layout>
+]]), select("  Layout > *  "))).to_be(false)
+
 expect(css.calculate_selector_specificity(select("  Layout "))).to_be(1)
 expect(css.calculate_selector_specificity(select("  Layout > Text  "))).to_be(2)
 expect(css.calculate_selector_specificity(select("  Layout Text  "))).to_be(2)

@@ -1,4 +1,3 @@
-[ ] Implement universal selector *
 [ ] Allow setting size and alignment of items
 [ ] Create github workflow script to zip files and create a release when pushing a new tag
 [ ] Create local script to zip files and create a release when setting a new tag
