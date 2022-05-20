@@ -33,11 +33,15 @@ Handlebars.registerHelper('concat', function (arr) {
   return arr.join(", ");
 })
 
-fs.writeFileSync("generated/index.html", compiled(elementData));
-if(process.argv[2] == "--upload") {
-  ghpages.publish("generated", err => {
-    if(err) {
-      console.error(err);
-    }
-  });
-}
+require("./getVersion.js")().then(version => {
+  version = version.match(/v[0-9]+\.[0-9]+\.[0-9]+/g);
+  elementData.version = (version ?? [""])[0];
+  fs.writeFileSync("generated/index.html", compiled(elementData));
+  if(process.argv[2] == "--upload") {
+    ghpages.publish("generated", err => {
+      if(err) {
+        console.error(err);
+      }
+    });
+  }
+})
