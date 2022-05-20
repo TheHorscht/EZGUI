@@ -23,7 +23,7 @@ fs.copyFileSync("script.js", "generated/script.js");
 Handlebars.registerHelper('description', function (str) {
   // str = str.replace(/<css>(.+?(?=<\/css>))<\/css>/g, `<a href="#css_$1" class="cssAttributeLink">$1</a>`)
   // str = str.replace(/\^(.+?(?=[^_a-zA-Z0-9]))/g, `<a href="#css_$1" class="cssAttributeLink">$1</a>`)
-  str = str.replace(/\^([_a-zA-Z0-9]+)/g, `<a href="#css_$1" class="cssAttributeLink">$1</a>`)
+  str = str.replace(/\^([_a-zA-Z0-9]+)/g, `<a href="#$1">$1</a>`)
   str = str.replace(/@(.+?(?=[^a-zA-Z0-9]))/g, `<span class="highlight">$1</span>`)
   str = str.replace(/\n/g, `<br>`)
   return new Handlebars.SafeString(str);

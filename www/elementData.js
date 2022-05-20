@@ -50,28 +50,28 @@ module.exports = {
       values: [
         { types: [align_horizontal] },
       ],
-      description: "Specifies horizontal alignment of items in a Layout when ^direction is vertical.",
+      description: "Specifies horizontal alignment of items in a ^Layout when ^direction is vertical.",
     },
     {
       name: "align_items_vertical",
       values: [
         { types: [align_vertical] },
       ],
-      description: "Specifies vertical alignment of items in a Layout when ^direction is horizontal.",
+      description: "Specifies vertical alignment of items in a ^Layout when ^direction is horizontal.",
     },
     {
       name: "border",
       values: [
         { types: [bool] },
       ],
-      description: "Toggles border rendering for certain elements like Layout and Button.",
+      description: "Toggles border rendering for certain elements like ^Layout and ^Button.",
     },
     {
       name: "color",
       values: [
         { types: [color] },
       ],
-      description: "Colors an element, does not work properly with Image, especially alpha does not work at all on Image.",
+      description: "Colors an element, does not work properly with ^Image, especially alpha does not work at all on ^Image.",
     },
     {
       name: "padding",

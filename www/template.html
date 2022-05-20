@@ -22,7 +22,7 @@
     <a href="#Properties">Properties</a>
     <div class="submenu">
       {{#each cssProperties}}
-      <a href="#css_{{name}}">{{name}}</a>
+      <a href="#{{name}}">{{name}}</a>
       {{/each}}
     </div>
   </div>
@@ -52,7 +52,7 @@
     <div class="elements">
       <h2 id="Properties">CSS Properties</h2>
       {{#each cssProperties}}
-      <div class="element" id="css_{{name}}" data-noclear>
+      <div class="element" id="{{name}}" data-noclear>
         <h3 class="elementName">{{name}}</h3>
         {{#each values}}
         <div>
