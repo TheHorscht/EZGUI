@@ -390,7 +390,7 @@ function parse_function_call_expression(input, error_callback)
         end
         table.insert(_args, arg.value)
       end
-      data_context[function_name](unpack(_args))
+      return data_context[function_name](unpack(_args))
     end
   }
 end

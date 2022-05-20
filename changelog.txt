@@ -1,4 +1,5 @@
 - Add 'color' CSS property
+- Add 'if' conditional rendering of elements: <Layout if="show_layout">
 
 v0.1.3:
 - Fix element not found error
