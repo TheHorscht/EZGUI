@@ -57,7 +57,7 @@ function Layout:_GetInnerAndOuterDimensions(gui, data_context)
   local inner_width = 0
   local inner_height = 0
   for i, child in ipairs(self.children) do
-    if not child.render_if or (child.render_if()) then
+    if not child.render_if or child.render_if() then
       loop_call(child, data_context, function(child, data_context)
         local child_width, child_height = child:GetDimensions(gui, data_context)
         local child_total_width = child_width + child.style.margin_left + child.style.margin_right
@@ -130,7 +130,7 @@ function Layout:Render(gui, new_id, data_context, layout)
   self.next_element_x = x
   self.next_element_y = y
   for i, child in ipairs(self.children) do
-    if not child.render_if or (child.render_if()) then
+    if not child.render_if or child.render_if() then
       loop_call(child, data_context, function(child, data_context)
         local child_width, child_height = child:GetDimensions(gui, data_context)
         local child_total_width = child_width + child.style.margin_left + child.style.margin_right
@@ -142,7 +142,9 @@ function Layout:Render(gui, new_id, data_context, layout)
           local x, y = self:GetPositionForWidget(child, child_width, child_height)
           render_debug_rect(x, y, child_width, child_height, "green")
         end
-        child:Render(gui, new_id, data_context, self)
+        if not child.show_if or child.show_if() then
+          child:Render(gui, new_id, data_context, self)
+        end
         if self.style.direction == "horizontal" then
           self.next_element_x = self.next_element_x + child_total_width
         else

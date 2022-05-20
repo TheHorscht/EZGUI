@@ -168,23 +168,27 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
     self.loop = parser.parse_loop(string_buffer(xml_element.attr.forEach))
   end
   self:ReadAttribute(xml_element, "debug", false)
-  local render_if = xml_element.attr["if"]
-  if render_if then
-    if render_if:match("%(") then
-      local render_if_func = parse_function_call_expression(render_if)
-      self.render_if = function()
-        return render_if_func.execute(data_context, self)
-      end
-    else
-      self.render_if = function()
-        local a = {
-          type = "binding",
-          target_chain = parser.read_binding_target(render_if),
-        }
-        return get_value_from_chain_or_not(data_context, a)
+  local function read_func(prop, attr)
+    local attr = xml_element.attr[attr]
+    if attr then
+      if attr:match("%(") then
+        local func = parse_function_call_expression(attr)
+        self[prop] = function()
+          return func.execute(data_context, self)
+        end
+      else
+        self[prop] = function()
+          local a = {
+            type = "binding",
+            target_chain = parser.read_binding_target(attr),
+          }
+          return get_value_from_chain_or_not(data_context, a)
+        end
       end
     end
   end
+  read_func("render_if", "if")
+  read_func("show_if", "show")
 end)
 
 DOMElement.default_style = {
