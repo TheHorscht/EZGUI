@@ -40,7 +40,7 @@ function Slider:Render(gui, new_id, data_context, layout)
   GuiZSetForNextWidget(gui, z)
   local old_value = value
   local new_value = GuiSlider(gui, new_id(), x - 2 + self.style.padding_left, y + self.style.padding_top, "", value, self.min, self.max, self.default, 1, " ", self.width)
-  if math.abs(new_value - old_value) > 1 then
+  if math.abs(new_value - old_value) > 0.001 then
     local context = data_context
     for i=1, #self.binding_target.target_chain-1 do
       context = context[self.binding_target.target_chain[i]]
