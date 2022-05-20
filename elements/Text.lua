@@ -52,6 +52,10 @@ function Text:Render(gui, new_id, data_context, layout)
   for i, line in ipairs(lines) do
     line = trim(line)
     GuiZSetForNextWidget(gui, z)
+    if self.style.color then
+      local c = self.style.color
+      GuiColorSetForNextWidget(gui, c.r, c.g, c.b, math.max(c.a, 0.001))
+    end
     GuiText(gui, x + self.style.padding_left, y + self.style.padding_top + (i-1) * line_height, line)
   end
 

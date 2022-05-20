@@ -63,7 +63,8 @@ function Button:Render(gui, new_id, data_context, layout)
   if hovered then
     GuiColorSetForNextWidget(gui, 1, 1, 0, 1)
   else
-    GuiColorSetForNextWidget(gui, 1, 1, 1, 1)
+    local c = self.style.color or { r = 1, g = 1, b = 1, a = 1 }
+    GuiColorSetForNextWidget(gui, c.r, c.g, c.b, math.max(c.a, 0.001))
   end
   GuiZSetForNextWidget(gui, z - 3)
   GuiText(gui, x + border_size + self.style.padding_left, y + border_size + self.style.padding_top, text)

@@ -151,13 +151,12 @@ define_property("margin_bottom", false, 0, function(style, name, str)
   end
 end)
 
--- define_property("color", true, "#FFFFFF", function(style, name, str)
---   local tokens = parser.parse_tokens(str)
---   -- TODO: Parse color
---   if validate_tokens(tokens, "color") then
---     style[name] = make_value(tokens[1].value)
---   end
--- end)
+define_property("color", true, nil, function(style, name, str)
+  local tokens = parser.parse_tokens(str)
+  if validate_tokens(tokens, "color") then
+    style._set(name, tokens[1])
+  end
+end)
 
 define_property("direction", false, "vertical", function(style, name, str)
   local tokens = parser.parse_tokens(str)

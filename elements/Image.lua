@@ -30,6 +30,10 @@ function Image:Render(gui, new_id, data_context, layout)
     z = self:GetZ()
   end
   GuiZSetForNextWidget(gui, z)
+  if self.style.color then
+    local c = self.style.color
+    GuiColorSetForNextWidget(gui, c.r, c.g, c.b, math.max(c.a, 0.001))
+  end
   GuiImage(gui, new_id(), x + self.style.padding_left, y + self.style.padding_top, self.src, 1, self.scaleX, self.scaleY)
 end
 

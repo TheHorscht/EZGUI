@@ -1,6 +1,7 @@
 const bool = typeof true;
 const string = typeof "";
 const number = typeof 0;
+const color = "RGB(A) Hex Color #FFFFFF(FF)";
 const direction = "horizontal | vertical";
 const align_horizontal = "left | center | right";
 const align_vertical = "top | center | bottom";
@@ -57,6 +58,20 @@ module.exports = {
         { types: [align_vertical] },
       ],
       description: "Specifies vertical alignment of items in a Layout when ^direction is horizontal.",
+    },
+    {
+      name: "border",
+      values: [
+        { types: [bool] },
+      ],
+      description: "Toggles border rendering for certain elements like Layout and Button.",
+    },
+    {
+      name: "color",
+      values: [
+        { types: [color] },
+      ],
+      description: "Colors an element, does not work properly with Image, especially alpha does not work at all on Image.",
     },
     {
       name: "padding",

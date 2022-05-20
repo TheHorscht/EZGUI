@@ -48,6 +48,10 @@ function Slider:Render(gui, new_id, data_context, layout)
     context[self.binding_target.target_chain[#self.binding_target.target_chain]] = new_value
   end
   GuiZSetForNextWidget(gui, z)
+  if self.style.color then
+    local c = self.style.color
+    GuiColorSetForNextWidget(gui, c.r, c.g, c.b, math.max(c.a, 0.001))
+  end
   GuiText(gui, x + self.width + 3 + self.style.padding_left, y - 1 + self.style.padding_top, tostring(value))
 end
 
