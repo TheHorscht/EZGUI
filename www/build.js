@@ -20,12 +20,17 @@ fs.copyFileSync("style.css", "generated/style.css");
 fs.copyFileSync("script.js", "generated/script.js");
 // fs.copySync("assets", "generated/assets");
 
-Handlebars.registerHelper('description', function (str) {
-  // str = str.replace(/<css>(.+?(?=<\/css>))<\/css>/g, `<a href="#css_$1" class="cssAttributeLink">$1</a>`)
-  // str = str.replace(/\^(.+?(?=[^_a-zA-Z0-9]))/g, `<a href="#css_$1" class="cssAttributeLink">$1</a>`)
+Handlebars.registerHelper('description', function (str, codeBlocks) {
   str = str.replace(/\^([_a-zA-Z0-9]+)/g, `<a href="#$1">$1</a>`)
   str = str.replace(/@(.+?(?=[^a-zA-Z0-9]))/g, `<span class="highlight">$1</span>`)
   str = str.replace(/\n/g, `<br>`)
+  str = str.replace(/<(\d):([^<]*)>/ig, (match, group1, group2) => {
+    console.log(group2);
+    let innerPart = codeBlocks[parseInt(group1)-1].replace(/\n*$/g, "");
+    innerPart = innerPart.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    let s = `\n<pre><code class="language-${group2}">${innerPart.trim()}\n</code></pre>\n`
+    return s;
+  })
   return new Handlebars.SafeString(str);
 })
 

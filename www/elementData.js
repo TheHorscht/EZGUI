@@ -1,6 +1,7 @@
 const bool = typeof true;
 const string = typeof "";
 const number = typeof 0;
+const loop_expression = "loop expression";
 const color = "RGB(A) Hex Color #FFFFFF(FF)";
 const direction = "horizontal | vertical";
 const align_horizontal = "left | center | right";
@@ -10,6 +11,30 @@ module.exports = {
   // DOM Elements
   elements: [
     {
+      name: "DOMElement (All Elements)",
+      description: "Every element is of this type and holds some common functionality.",
+      attributes: [{
+        name: "forEach",
+        values: [
+          [loop_expression]
+        ],
+        codeBlocks: [
+          `
+local data_context = {
+  fruit_basket = { "Apple", "Banana", "Tomato" }
+}
+`,`
+<Text forEach="fruit in fruit_basket">{{ fruit }}</Text>
+`, `
+<Text>Apple</Text>
+<Text>Banana</Text>
+<Text>Tomato</Text>
+`
+        ],
+        description: `Allows you to repeat the rendering of an element for each item in a table. Example:<1:lua><2:xml>Result:<3:xml>`
+      }]
+    },
+    {
       name: "Layout",
       description: "Responsible for positioning items, either horizontally or vertically (set by the CSS property ^direction)",
       attributes: [{
@@ -18,12 +43,6 @@ module.exports = {
           [bool]
         ],
         description: "Renders a debug overlay for padding and content"
-      },{
-        name: "some_other_attribute",
-        values: [
-          [string]
-        ],
-        description: "Whatever"
       }]
     },
     {

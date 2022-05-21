@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/base16/dracula.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
 </head>
 <body>
   <div class="navigation">
@@ -43,7 +45,7 @@
           {{#each values}}
           <div class="attributeValues">[ {{this}} ]</div>
           {{/each}}
-          <span class="attributeDescription">{{description description}}</span>
+          <span class="attributeDescription">{{description description codeBlocks}}</span>
         </div>
         {{/each}}
       </div>
@@ -57,7 +59,7 @@
         {{#each values}}
         <div>
           <div class="attributeValues">[ {{concat types}} ]</div>
-          <div class="cssAttributeDescription">{{#if description}}{{description description}}{{/if}}</div>
+          <div class="cssAttributeDescription">{{#if description}}{{description description codeBlocks}}{{/if}}</div>
         </div>
         {{/each}}
         <span class="propertyDescription">{{description description}}</span>
@@ -66,5 +68,6 @@
     </div>
   </div>
   <script src="script.js"></script>
+  <script>hljs.highlightAll();</script>
 </body>
 </html>
