@@ -1,3 +1,6 @@
+- Improve Slider text display to keep the Slider at constant width, which is now set by its style.width instead of as an attribute
+  The Slider will now always keep the size specified by style.width.
+- Slider: Added 'precision' attribute that controls how many digits after the period are shown.
 - Add CSS properties 'align_self_horizontal' and 'align_self_vertical'
 - Add CSS property 'color'
 - Add 'if' conditional rendering of elements: <Layout if="render_layout">
