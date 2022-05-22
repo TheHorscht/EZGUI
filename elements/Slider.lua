@@ -11,15 +11,17 @@ local Slider = new_class("Slider", function(self, xml_element, data_context)
   self.width = tonumber(xml_element.attr.width) or 100
 end, DOMElement)
 
-function Slider:GetDimensions(gui, data_context)
-  if not gui then error("Required parameter #1: GuiObject", 2) end
-  if not data_context then error("Required parameter #2: data_context:table", 2) end
+function Slider:GetInnerAndOuterDimensions(gui, data_context)
   local slider_width, slider_height = self.width, 8
   local text = tostring(get_value_from_chain_or_not(data_context, self.binding_target))
   local text_width, text_height = GuiGetTextDimensions(gui, text)
-  local widget_width = slider_width + text_width + 3
-  local widget_height = slider_height
-  return widget_width + self.style.padding_left + self.style.padding_right, widget_height + self.style.padding_top + self.style.padding_bottom
+  local inner_width = slider_width + text_width + 3
+  local inner_height = slider_height
+  local outer_width = inner_width + self.style.padding_left + self.style.padding_right
+  local outer_height = inner_height + self.style.padding_top + self.style.padding_bottom
+  outer_width = math.max(outer_width, self.style.width or 0)
+  outer_height = math.max(outer_height, self.style.height or 0)
+  return inner_width, inner_height, outer_width, outer_height
 end
 
 function Slider:Render(gui, new_id, data_context, layout)
@@ -29,7 +31,7 @@ function Slider:Render(gui, new_id, data_context, layout)
   local value = get_value_from_chain_or_not(data_context, self.binding_target)
   local x, y = self.style.margin_left, self.style.margin_top
   if layout then
-    x, y = layout:GetPositionForWidget(self, total_width, total_height)
+    x, y = layout:GetPositionForWidget(gui, data_context, self, total_width, total_height)
   end
   local z
   if layout then

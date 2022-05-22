@@ -79,6 +79,20 @@ local data_context = {
       description: "Specifies vertical alignment of items in a ^Layout when ^direction is horizontal.",
     },
     {
+      name: "align_self_horizontal",
+      values: [
+        { types: [align_horizontal] },
+      ],
+      description: "Similar to the 'text-align' (real) CSS property. Only works when ^width is being set and is greater than the content width.",
+    },
+    {
+      name: "align_self_vertical",
+      values: [
+        { types: [align_vertical] },
+      ],
+      description: "Similar to the 'text-align' (real) CSS property, but vertical. Only works when ^height is being set and is greater than the content height.",
+    },
+    {
       name: "border",
       values: [
         { types: [bool] },

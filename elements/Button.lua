@@ -18,25 +18,29 @@ Button.default_style = {
   padding_bottom = 1,
 }
 
-function Button:GetDimensions(gui, data_context)
+function Button:GetInnerAndOuterDimensions(gui, data_context)
+  if not gui then error("Required parameter #1: GuiObject", 2) end
+  if not data_context then error("Required parameter #2: data_context:table", 2) end
   local text = inflate(self.value, data_context)
-  local text_width, text_height = GuiGetTextDimensions(gui, text)
+  local inner_width, inner_height = GuiGetTextDimensions(gui, text)
   local border_size = self.style.border and self.border_size or 0
-  local total_width = border_size * 2 + self.style.padding_left + self.style.padding_right + text_width
-  local total_height = border_size * 2  + self.style.padding_top + self.style.padding_bottom + text_height
-  return total_width, total_height
+  local outer_width = border_size * 2 + self.style.padding_left + self.style.padding_right + inner_width
+  local outer_height = border_size * 2  + self.style.padding_top + self.style.padding_bottom + inner_height
+  outer_width = math.max(outer_width, self.style.width or 0)
+  outer_height = math.max(outer_height, self.style.height or 0)
+  return inner_width, inner_height, outer_width, outer_height
 end
 
 function Button:Render(gui, new_id, data_context, layout)
   local text = inflate(self.value, data_context)
   local text_width, text_height = GuiGetTextDimensions(gui, text)
-  local total_width, total_height = self:GetDimensions(gui, data_context)
-  local inner_width = text_width + self.style.padding_left + self.style.padding_right
-  local inner_height = text_height + self.style.padding_top + self.style.padding_bottom
+  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)
   local border_size = self.style.border and self.border_size or 0
-  local x, y = layout:GetPositionForWidget(self, total_width, total_height)
-  x = x + self.style.margin_left
-  y = y + self.style.margin_top
+  local x, y = self.style.margin_left, self.style.margin_top
+  if layout then
+    local width, height = self:GetDimensions(gui, data_context)
+    x, y = layout:GetPositionForWidget(gui, data_context, self, width, height)
+  end
   local z
   if layout then
     z = layout:GetZ()

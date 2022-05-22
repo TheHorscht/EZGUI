@@ -222,8 +222,21 @@ function DOMElement:QuerySelector(selector_string)
   return find_matching_self_or_child(self)
 end
 
-function DOMElement:GetDimensions()
-  error("This should never get called", 2)
+-- Subclasses need to implement GetInnerAndOuterDimensions()
+function DOMElement:GetDimensions(gui, data_context)
+  if not gui then error("Required parameter #1: GuiObject", 2) end
+  if not data_context then error("Required parameter #2: data_context:table", 2) end
+  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)
+  return outer_width, outer_height
+end
+
+function DOMElement:GetRenderOffset(gui, data_context)
+  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)  
+  local space_to_move_x = outer_width - inner_width
+  local space_to_move_y = outer_height - inner_height
+  local x_translate_scale = ({ left=0, center=0.5, right=1 })[self.style.align_self_horizontal]
+  local y_translate_scale = ({ top=0, center=0.5, bottom=1 })[self.style.align_self_vertical]
+  return x_translate_scale * space_to_move_x, y_translate_scale * space_to_move_y
 end
 
 function DOMElement:AddChild(child)

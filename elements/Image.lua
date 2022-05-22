@@ -9,10 +9,14 @@ local Image = new_class("Image", function(self, xml_element, data_context)
   self.scaleY = tonumber(xml_element.attr.scaleY) or 1
 end, DOMElement)
 
-function Image:GetDimensions(gui)
+function Image:GetInnerAndOuterDimensions(gui)
   if not gui then error("Required parameter #1: GuiObject", 2) end
-  local width, height = GuiGetImageDimensions(gui, self.src, 1)
-  return width * self.scaleX + self.style.padding_left + self.style.padding_right, height * self.scaleY + self.style.padding_top + self.style.padding_bottom
+  local inner_width, inner_height = GuiGetImageDimensions(gui, self.src, 1)
+  local outer_width = inner_width * self.scaleX + self.style.padding_left + self.style.padding_right
+  local outer_height = inner_height * self.scaleY + self.style.padding_top + self.style.padding_bottom
+  outer_width = math.max(outer_width, self.style.width or 0)
+  outer_height = math.max(outer_height, self.style.height or 0)
+  return inner_width, inner_height, outer_width, outer_height
 end
 
 function Image:Render(gui, new_id, data_context, layout)
@@ -20,8 +24,8 @@ function Image:Render(gui, new_id, data_context, layout)
   if not data_context then error("Required parameter #2: data_context", 2) end
   local x, y = self.style.margin_left, self.style.margin_top
   if layout then
-    local width, height = self:GetDimensions(gui)
-    x, y = layout:GetPositionForWidget(self, width, height)
+    local width, height = self:GetDimensions(gui, data_context)
+    x, y = layout:GetPositionForWidget(gui, data_context, self, width, height)
   end
   local z
   if layout then

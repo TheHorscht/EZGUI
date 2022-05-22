@@ -14,22 +14,24 @@ local Text = new_class("Text", function(self, xml_element, data_context)
   self.value = parsers.parse_text(trim(xml_element:text()))
 end, DOMElement)
 
-function Text:GetDimensions(gui, data_context)
+function Text:GetInnerAndOuterDimensions(gui, data_context)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context:table", 2) end
   local text = inflate(self.value, data_context)
   -- split text into lines
   local lines = utils.split_lines(text)
-  local width, height = 0, 0
+  local inner_width, inner_height = 0, 0
   for i, line in ipairs(lines) do
     line = trim(line)
     local w, h = GuiGetTextDimensions(gui, line)
-    width = math.max(width, w)
-    height = height + h
+    inner_width = math.max(inner_width, w)
+    inner_height = inner_height + h
   end
-  width = width + self.style.padding_left + self.style.padding_right
-  height = height + self.style.padding_top + self.style.padding_bottom
-  return width, height
+  local outer_width = inner_width + self.style.padding_left + self.style.padding_right
+  local outer_height = inner_height + self.style.padding_top + self.style.padding_bottom
+  outer_width = math.max(outer_width, self.style.width or 0)
+  outer_height = math.max(outer_height, self.style.height or 0)
+  return inner_width, inner_height, outer_width, outer_height
 end
 
 function Text:Render(gui, new_id, data_context, layout)
@@ -41,7 +43,7 @@ function Text:Render(gui, new_id, data_context, layout)
   local line_height = (height - self.style.padding_top - self.style.padding_bottom) / #lines
   local x, y = self.style.margin_left, self.style.margin_top
   if layout then
-    x, y = layout:GetPositionForWidget(self, width, height)
+    x, y = layout:GetPositionForWidget(gui, data_context, self, width, height)
   end
   local z
   if layout then

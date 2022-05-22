@@ -1,4 +1,5 @@
-- Add 'color' CSS property
+- Add CSS properties 'align_self_horizontal' and 'align_self_vertical'
+- Add CSS property 'color'
 - Add 'if' conditional rendering of elements: <Layout if="render_layout">
 - Add 'show' conditional rendering of elements: <Layout show="layout_visible">
 

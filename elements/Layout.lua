@@ -15,7 +15,7 @@ local Layout = new_class("Layout", function(self, xml_element, data_context)
   self.border_size = 3
 end, DOMElement)
 
-function Layout:GetPositionForWidget(element, width, height)
+function Layout:GetPositionForWidget(gui, data_context, element, width, height)
   local border_size = self.style.border and self.border_size or 0
   local x = self.next_element_x + self.style.padding_left + border_size
   local y = self.next_element_y + self.style.padding_top + border_size
@@ -49,11 +49,15 @@ function Layout:GetPositionForWidget(element, width, height)
     y = y + something
     x = x + element.style.margin_left + inner_width_without_padding * horizontal_scalar - (self._content_width * horizontal_scalar)
   end
-
-  return x, y
+  local offset_x, offset_y = element:GetRenderOffset(gui, data_context)
+  x = x + offset_x
+  y = y + offset_y
+  return x, y, offset_x, offset_y
 end
 
-function Layout:_GetInnerAndOuterDimensions(gui, data_context)
+function Layout:GetInnerAndOuterDimensions(gui, data_context)
+  if not gui then error("Required parameter #1: GuiObject", 2) end
+  if not data_context then error("Required parameter #2: data_context:table", 2) end
   local inner_width = 0
   local inner_height = 0
   for i, child in ipairs(self.children) do
@@ -91,16 +95,13 @@ function Layout:_GetInnerAndOuterDimensions(gui, data_context)
   self._inner_height = inner_height
   self._content_width = content_width
   self._content_height = content_height
+  outer_width = math.max(outer_width, self.style.width or 0)
+  outer_height = math.max(outer_height, self.style.height or 0)
   return inner_width, inner_height, outer_width, outer_height, content_width, content_height
 end
 
-function Layout:GetDimensions(gui, data_context)
-  local inner_width, inner_height, outer_width, outer_height = self:_GetInnerAndOuterDimensions(gui, data_context)
-  return outer_width, outer_height
-end
-
 function Layout:Render(gui, new_id, data_context, layout)
-  local inner_width, inner_height, outer_width, outer_height = self:_GetInnerAndOuterDimensions(gui, data_context)
+  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)
   local x, y = self.style.margin_left, self.style.margin_top
   if layout then
     x, y = layout:GetPositionForWidget(self, outer_width, outer_height)
@@ -135,12 +136,10 @@ function Layout:Render(gui, new_id, data_context, layout)
         local child_width, child_height = child:GetDimensions(gui, data_context)
         local child_total_width = child_width + child.style.margin_left + child.style.margin_right
         local child_total_height = child_height + child.style.margin_top + child.style.margin_bottom
-        child_total_width = math.max(child_total_width, child.style.width or 0)
-        child_total_height = math.max(child_total_height, child.style.height or 0)
         if self.attr.debug then
           -- Content
-          local x, y = self:GetPositionForWidget(child, child_width, child_height)
-          render_debug_rect(x, y, child_width, child_height, "green")
+          local x, y, offset_x, offset_y = self:GetPositionForWidget(gui, data_context, child, child_width, child_height)
+          render_debug_rect(x - offset_x, y - offset_y, child_total_width, child_total_height, "green")
         end
         if not child.show_if or child.show_if() then
           child:Render(gui, new_id, data_context, self)
