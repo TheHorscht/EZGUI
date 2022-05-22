@@ -183,11 +183,11 @@ return {
         else
           dom_cache[content] = make_dom_from_nxml_table(content.xml, content.xml_string, data)
         end
+        dom_cache[content].style.margin_left = x
+        dom_cache[content].style.margin_top = y
       end
       local new_id = create_id_generator()
       local root_layout = dom_cache[content]
-      root_layout.style.margin_left = x
-      root_layout.style.margin_top = y
       return root_layout:Render(gui, new_id, data)
     end
   end
