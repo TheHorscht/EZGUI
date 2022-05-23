@@ -49,7 +49,7 @@ function Button:Render(gui, new_id, data_context, layout)
   end
   -- Draw an invisible nine piece which catches mouse clicks, this is to have exact control over the clickable area, which should include padding
   GuiZSetForNextWidget(gui, z - 2)
-  GuiImageNinePiece(gui, new_id() + 9999, x + border_size, y + border_size, inner_width, inner_height, 0)
+  GuiImageNinePiece(gui, new_id() + 9999, x + border_size, y + border_size, outer_width, outer_height, 0)
   local clicked, right_clicked, hovered, _x, _y, width, height, draw_x, draw_y, draw_width, draw_height = GuiGetPreviousWidgetInfo(gui)
   if clicked then
     self.onClick.execute(data_context, self)

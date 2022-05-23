@@ -1,3 +1,5 @@
+- FIX: Button padding was no longer included in the click area
+
 v0.1.4:
 - Improve Slider text display to keep the Slider at constant width, which is now set by its style.width instead of as an attribute
 - Slider: Added 'precision' attribute that controls how many digits after the period are shown (value is still saved untruncated)
