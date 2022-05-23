@@ -104,7 +104,7 @@ function Layout:Render(gui, new_id, data_context, layout)
   local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)
   local x, y = self.style.margin_left, self.style.margin_top
   if layout then
-    x, y = layout:GetPositionForWidget(self, outer_width, outer_height)
+    x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
   end
   local z
   if layout then
@@ -119,27 +119,67 @@ function Layout:Render(gui, new_id, data_context, layout)
   local function render_debug_rect(x, y, width, height, color)
     if width > 0 and height > 0 then
       GuiZSetForNextWidget(gui, z - 50)
-      local r, g, b = unpack(({
-        red = { 1, 0, 0 },
-        green = { 0, 1, 0 },
-        blue = { 0, 0, 1 },
-      })[color])
+      local r, g, b
+      if type(color) == "string" then
+        r, g, b = unpack(({
+          red = { 1, 0, 0 },
+          green = { 0, 1, 0 },
+          blue = { 0, 0, 1 },
+        })[color])
+      elseif type(color) == "table" then
+        r, g, b = unpack(color)
+      end
       GuiColorSetForNextWidget(gui, r, g, b, 1)
       GuiImage(gui, 9999, x, y, "data/debug/whitebox.png", 0.5, width / 20, height / 20)
     end
   end
+
+  local function render_debug_margin_and_padding(x, y, style, border_size, inner_width, inner_height, outer_width, outer_height)
+    -- Margins
+    -- Top
+    render_debug_rect(x - style.margin_left, y - style.margin_top, outer_width + style.margin_left + style.margin_right, style.margin_top, "red")
+    -- Left
+    render_debug_rect(x - style.margin_left, y, style.margin_left, outer_height, "red")
+    -- Right
+    render_debug_rect(x + outer_width, y, style.margin_right, outer_height, "red")
+    -- Bottom
+    render_debug_rect(x - style.margin_left, y + outer_height, outer_width + style.margin_left + style.margin_right, style.margin_bottom, "red")
+
+    -- Padding
+    -- -- Top
+    local render_all = true
+    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 0 then
+      render_debug_rect(x + border_size, y + border_size, inner_width, style.padding_top, "blue")
+    end
+    -- -- Left
+    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 1 then
+      render_debug_rect(x + border_size, y + border_size + style.padding_top, style.padding_left, inner_height - style.padding_top - style.padding_bottom, "blue")
+    end
+    -- -- Right
+    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 2 then
+      render_debug_rect(x + border_size + inner_width - style.padding_right, y + border_size + style.padding_top, style.padding_right, inner_height - style.padding_top - style.padding_bottom, "blue")
+    end
+    -- -- Bottom
+    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 3 then
+      render_debug_rect(x + border_size, y + border_size + inner_height - style.padding_bottom, inner_width, style.padding_bottom, "blue")
+    end
+  end
+
   self.next_element_x = x
   self.next_element_y = y
   for i, child in ipairs(self.children) do
     if not child.render_if or child.render_if() then
       loop_call(child, data_context, function(child, data_context)
-        local child_width, child_height = child:GetDimensions(gui, data_context)
-        local child_total_width = child_width + child.style.margin_left + child.style.margin_right
-        local child_total_height = child_height + child.style.margin_top + child.style.margin_bottom
+        local child_inner_width, child_inner_height, child_outer_width, child_outer_height = child:GetInnerAndOuterDimensions(gui, data_context)
+        local child_total_width = child_outer_width + child.style.margin_left + child.style.margin_right
+        local child_total_height = child_outer_height + child.style.margin_top + child.style.margin_bottom
         if self.attr.debug then
+          local x, y, offset_x, offset_y = self:GetPositionForWidget(gui, data_context, child, child_outer_width, child_outer_height)
+          local inner_width = child_outer_width - child.style.padding_left - child.style.padding_right
+          local inner_height = child_outer_height - child.style.padding_top - child.style.padding_bottom
+          render_debug_margin_and_padding(x - offset_x, y - offset_y, child.style, 0, inner_width + child.style.padding_left + child.style.padding_right, inner_height + child.style.padding_top + child.style.padding_bottom, child_outer_width, child_outer_height)
           -- Content
-          local x, y, offset_x, offset_y = self:GetPositionForWidget(gui, data_context, child, child_width, child_height)
-          render_debug_rect(x - offset_x, y - offset_y, child_total_width, child_total_height, "green")
+          render_debug_rect(x + child.style.padding_left, y + child.style.padding_top, child_inner_width, child_inner_height, { 0, 0.2 + (i / #self.children) * 0.8, 0 })
         end
         if not child.show_if or child.show_if() then
           child:Render(gui, new_id, data_context, self)
@@ -159,25 +199,7 @@ function Layout:Render(gui, new_id, data_context, layout)
     end
   end
   if self.attr.debug then
-    -- Margins
-    -- Top
-    render_debug_rect(x - self.style.margin_left, y - self.style.margin_top, outer_width + self.style.margin_left + self.style.margin_right, self.style.margin_top, "red")
-    -- Left
-    render_debug_rect(x - self.style.margin_left, y, self.style.margin_left, outer_height, "red")
-    -- Right
-    render_debug_rect(x + outer_width, y, self.style.margin_right, outer_height, "red")
-    -- Bottom
-    render_debug_rect(x - self.style.margin_left, y + outer_height, outer_width + self.style.margin_left + self.style.margin_right, self.style.margin_bottom, "red")
-
-    -- Padding
-    -- -- Top
-    render_debug_rect(x + self.border_size, y + self.border_size, inner_width, self.style.padding_top, "blue")
-    -- -- Left
-    render_debug_rect(x + self.border_size, y + self.border_size + self.style.padding_top, self.style.padding_left, inner_height - self.style.padding_top - self.style.padding_bottom, "blue")
-    -- -- Right
-    render_debug_rect(x + self.border_size + inner_width - self.style.padding_right, y + self.border_size + self.style.padding_top, self.style.padding_right, inner_height - self.style.padding_top - self.style.padding_bottom, "blue")
-    -- -- Bottom
-    render_debug_rect(x + self.border_size, y + self.border_size + inner_height - self.style.padding_bottom, inner_width, self.style.padding_bottom, "blue")
+    render_debug_margin_and_padding(x, y, self.style, self.border_size, inner_width, inner_height, outer_width, outer_height)
   end
   return outer_width, outer_height
 end

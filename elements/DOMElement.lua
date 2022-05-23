@@ -231,9 +231,11 @@ function DOMElement:GetDimensions(gui, data_context)
 end
 
 function DOMElement:GetRenderOffset(gui, data_context)
-  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)  
-  local space_to_move_x = outer_width - inner_width
-  local space_to_move_y = outer_height - inner_height
+  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)
+  -- TODO: Return something like content_width without padding from the child instead of subtracting padding here?
+  -- Because it's like adding it first and then subtracting it again?...
+  local space_to_move_x = outer_width - (inner_width + self.style.padding_left + self.style.padding_right)
+  local space_to_move_y = outer_height - (inner_height + self.style.padding_top + self.style.padding_bottom)
   local x_translate_scale = ({ left=0, center=0.5, right=1 })[self.style.align_self_horizontal]
   local y_translate_scale = ({ top=0, center=0.5, bottom=1 })[self.style.align_self_vertical]
   return x_translate_scale * space_to_move_x, y_translate_scale * space_to_move_y
