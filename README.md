@@ -64,6 +64,12 @@ Render a slider.
 ## Text
 Render some text. Example `<Text>Hello</Text>`
 
+## Input
+For getting user input. Example `<Input bind="name"></Input>`
+
+### Properties:
+- `bind` - The data context variable to bind to
+
 All element support the `padding`, `margin` properties.
 
 # Styling / Pseudo-CSS

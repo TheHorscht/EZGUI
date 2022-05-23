@@ -48,7 +48,7 @@ local function make_observable(t, key, prev_keys)
       end
       path = path .. key
 
-      print(path .. " changed!")
+      -- print(path .. " changed!")
     end
   })
 end
@@ -65,12 +65,13 @@ return {
         ("%sparsing_functions.lua"):format(self_path),
         ("%sstring_buffer.lua"):format(self_path),
         ("%sutils.lua"):format(self_path),
-        ("%selements/Button.lua"):format(self_path),
         ("%selements/DOMElement.lua"):format(self_path),
-        ("%selements/Image.lua"):format(self_path),
         ("%selements/Layout.lua"):format(self_path),
-        ("%selements/Slider.lua"):format(self_path),
         ("%selements/Text.lua"):format(self_path),
+        ("%selements/Input.lua"):format(self_path),
+        ("%selements/Button.lua"):format(self_path),
+        ("%selements/Image.lua"):format(self_path),
+        ("%selements/Slider.lua"):format(self_path),
       }
       for i, filepath in ipairs(files) do
         local content = ModTextFileGetContent(filepath)
@@ -88,6 +89,7 @@ return {
     local pretty = dofile_once(self_path .. "lib/pretty.lua")
     local Layout = dofile_once(self_path .. "elements/Layout.lua")
     local Text = dofile_once(self_path .. "elements/Text.lua")
+    local Input = dofile_once(self_path .. "elements/Input.lua")
     local Button = dofile_once(self_path .. "elements/Button.lua")
     local Image = dofile_once(self_path .. "elements/Image.lua")
     local Slider = dofile_once(self_path .. "elements/Slider.lua")
@@ -102,6 +104,7 @@ return {
       Button = Button,
       Image = Image,
       Slider = Slider,
+      Input = Input,
     }
 
     local dom_cache = {}

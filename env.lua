@@ -51,6 +51,7 @@ function GuiGetTextDimensions(gui, text) return #text * 6, 10 end
 function GuiGetImageDimensions(gui, image_path) return 10, 10 end
 function GuiLayoutEnd() end
 function GuiSlider() return 1 end
+function GuiTextInput() return "" end
 function GuiBeginScrollContainer() end
 function GuiEndScrollContainer() end
 function GuiOptionsAddForNextWidget() end

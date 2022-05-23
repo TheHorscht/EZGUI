@@ -7,6 +7,8 @@ local data = {
   },
   align_items_horizontal = "center",
   align_items_vertical = "top",
+  align_self_horizontal = "center",
+  align_self_vertical = "top",
   direction = "vertical",
   pleft = {
     val = 22
@@ -17,6 +19,11 @@ local data = {
   margin_bottom = 0,
   padding_left = 0,
   padding_top = 0,
+  padding = 0,
+  margin = 0,
+  width = 0,
+  height = 0,
+  color = { r = 1, g = 1, b = 1, a = 1 },
   padding_right = 0,
   padding_bottom = 0,
   increase_counter = function(data, element, amount)
@@ -48,4 +55,4 @@ local parser = dofile_once("parsing_functions.lua")
 local pretty = dofile_once("lib/pretty.lua")
 local css = dofile_once("css.lua")
 
-local a = d(0, 0, "../../gui.xml", data)
+local a = d(0, 0, "../../gui2.xml", data)
