@@ -177,9 +177,13 @@ function Layout:Render(gui, new_id, data_context, layout)
           local x, y, offset_x, offset_y = self:GetPositionForWidget(gui, data_context, child, child_outer_width, child_outer_height)
           local inner_width = child_outer_width - child.style.padding_left - child.style.padding_right
           local inner_height = child_outer_height - child.style.padding_top - child.style.padding_bottom
-          render_debug_margin_and_padding(x - offset_x, y - offset_y, child.style, 0, inner_width + child.style.padding_left + child.style.padding_right, inner_height + child.style.padding_top + child.style.padding_bottom, child_outer_width, child_outer_height)
+          render_debug_margin_and_padding(x - offset_x, y - offset_y, child.style, child.border_size or 0, inner_width + child.style.padding_left + child.style.padding_right - (child.border_size or 0) * 2, inner_height + child.style.padding_top + child.style.padding_bottom - (child.border_size or 0) * 2, child_outer_width, child_outer_height)
           -- Content
-          render_debug_rect(x + child.style.padding_left, y + child.style.padding_top, child_inner_width, child_inner_height, { 0, 0.2 + (i / #self.children) * 0.8, 0 })
+          if child.style.border then
+            x = x + child.border_size
+            y = y + child.border_size
+          end
+          render_debug_rect(x + child.style.padding_left, y + child.style.padding_top, child_inner_width, child_inner_height, { 1, 0.2 + (i / #self.children) * 0.8, 0 })
         end
         if not child.show_if or child.show_if() then
           child:Render(gui, new_id, data_context, self)
