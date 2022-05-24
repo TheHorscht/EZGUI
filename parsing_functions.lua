@@ -380,7 +380,8 @@ function parse_function_call_expression(input, error_callback)
       if not data_context[function_name] then
         error("Function not found in data context: " .. function_name, 3)
       end
-      local _args = { data_context, element }
+      local _args = {}
+      -- Collect and package arguments
       for i, arg in ipairs(args) do
         if arg.type == "variable" then
           if not data_context[arg.value] then
@@ -390,7 +391,13 @@ function parse_function_call_expression(input, error_callback)
         end
         table.insert(_args, arg.value)
       end
-      return data_context[function_name](unpack(_args))
+      return setfenv(data_context[function_name], setmetatable({
+        self = data_context,
+        element = element
+      }, {
+        __index = _G,
+        __newindex = _G
+      }))(unpack(_args))
     end
   }
 end
