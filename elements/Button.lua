@@ -16,6 +16,7 @@ Button.default_style = {
   padding_top = 1,
   padding_right = 2,
   padding_bottom = 1,
+  border = true,
 }
 
 function Button:GetInnerAndOuterDimensions(gui, data_context)
