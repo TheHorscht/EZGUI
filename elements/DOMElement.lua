@@ -141,7 +141,11 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
       if not css_props[key] then
         error(("Unknown property: '%s'"):format(tostring(key)), 2)
       end
-      css_props[key].apply(self.style, value_string)
+      -- TODO: Lazy hack... rework later,
+      -- some css properties should not be applied to certain elements that don't support them
+      if not (self.name == "Input" and key:sub(1, 7) == "padding") then
+        css_props[key].apply(self.style, value_string)
+      end
     end
   })
   local attr = {}

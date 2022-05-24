@@ -30,7 +30,7 @@ end
 function Input:Render(gui, new_id, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context", 2) end
-  local width, height = self:GetDimensions(gui, data_context)
+  local width, height = self:GetInnerAndOuterDimensions(gui, data_context)
   local value = get_value_from_chain_or_not(data_context, self.binding_target)
   local x, y = self.style.margin_left, self.style.margin_top
   if layout then
