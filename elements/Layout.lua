@@ -118,7 +118,7 @@ function Layout:Render(gui, new_id, data_context, layout)
   -- Green = content
   local function render_debug_rect(x, y, width, height, color)
     if width > 0 and height > 0 then
-      GuiZSetForNextWidget(gui, z - 50)
+      GuiZSetForNextWidget(gui, z - 500000)
       local r, g, b
       if type(color) == "string" then
         r, g, b = unpack(({
