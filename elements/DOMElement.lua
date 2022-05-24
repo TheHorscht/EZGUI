@@ -167,7 +167,13 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
   if xml_element.attr.forEach then
     self.loop = parser.parse_loop(string_buffer(xml_element.attr.forEach))
   end
-  self:ReadAttribute(xml_element, "debug", false)
+  self:ReadAttribute(xml_element, "debug", false, function(val)
+    if val == "true" then
+      return true
+    elseif val == "false" then
+      return false
+    end
+  end)
   local function read_func(prop, attr)
     local attr = xml_element.attr[attr]
     if attr then
