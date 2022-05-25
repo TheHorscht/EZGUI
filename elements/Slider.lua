@@ -37,6 +37,7 @@ function Slider:Render(gui, new_id, data_context, layout)
   if not data_context then error("Required parameter #2: data_context", 2) end
   local width, height, outer_width, outer_height = self:GetDimensions(gui, data_context)
   local value = get_value_from_chain_or_not(data_context, self.binding_target)
+  value = tonumber(value) or 0
   local x, y = self.style.margin_left, self.style.margin_top
   local border_size = self:GetBorderSize()
   local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
