@@ -19,7 +19,8 @@ Input.default_style = {
 function Input:GetContentDimensions(gui, data_context)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context:table", 2) end
-  local inner_width, inner_height = math.max(self.min_width, self.style.width), 11
+  local border_size = self:GetBorderSize() 
+  local inner_width, inner_height = math.max(self.min_width, self.style.width - border_size * 2), 11
   return inner_width, inner_height
 end
 
