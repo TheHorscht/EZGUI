@@ -167,9 +167,9 @@ function Layout:Render(gui, new_id, data_context, layout)
           child:Render(gui, new_id, data_context, self)
         end
         if self.style.direction == "horizontal" then
-          self.next_element_x = self.next_element_x + math.max((child.style.width or 0) + child_border_size * 2, child_total_width)
+          self.next_element_x = self.next_element_x + math.max((child.style.width or 0), child_total_width)
         else
-          self.next_element_y = self.next_element_y + math.max((child.style.height or 0) + child_border_size * 2, child_total_height)
+          self.next_element_y = self.next_element_y + math.max((child.style.height or 0), child_total_height)
         end
       end)
     end
