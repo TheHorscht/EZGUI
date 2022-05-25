@@ -1,3 +1,4 @@
+- Images now support the @click attribute to basically create an ImageButton
 - BREAKING: Methods now automatically have access to 'self' (which is the data_context) and 'element' which is the element it was triggered on
 - FIX: Button padding was no longer included in the click area
 
