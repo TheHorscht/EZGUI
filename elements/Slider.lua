@@ -58,7 +58,6 @@ function Slider:Render(gui, new_id, data_context, layout)
   local z = self:GetZ()
   GuiZSetForNextWidget(gui, z)
   local slider_width, text_width = get_slider_and_text_width(self)
-  slider_width = slider_width - 1 -- To get just a tiny bit of extra room on the right side of text
   local old_value = value
   local new_value = GuiSlider(gui, new_id(), x + offset_x + border_size + self.style.padding_left - 2, y + offset_y + border_size + self.style.padding_top, "", value, self.attr.min, self.attr.max, self.attr.default, 1, " ", slider_width)
   if math.abs(new_value - old_value) > 0.001 then
@@ -74,7 +73,7 @@ function Slider:Render(gui, new_id, data_context, layout)
     local c = self.style.color
     GuiColorSetForNextWidget(gui, c.r, c.g, c.b, math.max(c.a, 0.001))
   end
-  GuiText(gui, x + offset_x + border_size + slider_width + self.style.padding_left + 3, y + offset_y + border_size + self.style.padding_top - 1, ("%." .. self.attr.precision .. "f"):format(value))
+  GuiText(gui, x + offset_x + border_size + slider_width + self.style.padding_left + 4, y + offset_y + border_size + self.style.padding_top - 1, ("%." .. self.attr.precision .. "f"):format(value))
   self:RenderBorder(gui, new_id, x, y, z, width, height)
 end
 

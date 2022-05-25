@@ -246,9 +246,7 @@ function DOMElement:GetDimensions(gui, data_context)
   local border_size = self:GetBorderSize()
   local outer_width = content_width + self.style.padding_left + self.style.padding_right + border_size * 2
   local outer_height = content_height + self.style.padding_top + self.style.padding_bottom + border_size * 2
-  -- return content_width, content_height, outer_width, outer_height
-  -- return content_width, content_height, math.max((self.style.width or 0), outer_width), math.max((self.style.height or 0), outer_height)
-  return content_width, content_height, math.max((self.style.width or 0) + border_size * 2, outer_width), math.max((self.style.height or 0) + border_size * 2, outer_height)
+  return content_width, content_height, math.max((self.style.width or 0), outer_width), math.max((self.style.height or 0), outer_height)
 end
 
 -- Just a shortcut for self.style.border and self.style.border_size or 0
@@ -260,8 +258,9 @@ function DOMElement:GetRenderOffset(gui, data_context)
   local content_width, content_height = self:GetContentDimensions(gui, data_context)
   -- TODO: Return something like content_width without padding from the child instead of subtracting padding here?
   -- Because it's like adding it first and then subtracting it again?...
-  content_width = content_width + self.style.padding_left + self.style.padding_right
-  content_height = content_height + self.style.padding_top + self.style.padding_bottom
+  local border_size = self:GetBorderSize()
+  content_width = content_width + self.style.padding_left + self.style.padding_right + border_size * 2
+  content_height = content_height + self.style.padding_top + self.style.padding_bottom + border_size * 2
   local space_to_move_x = math.max(self.style.width or 0, content_width) - content_width
   local space_to_move_y = math.max(self.style.height or 0, content_height) - content_height
   local x_translate_scale = ({ left=0, center=0.5, right=1 })[self.style.align_self_horizontal]
@@ -271,14 +270,13 @@ end
 
 function DOMElement:RenderBorder(gui, new_id, x, y, z, inner_width, inner_height)
   if self.style.border then
-    GuiZSetForNextWidget(gui, z + 1) -- + 1
-    -- GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NoLayouting)
-    -- Width and height are based on the inside
+    GuiZSetForNextWidget(gui, z + 1)
+    -- Width and height of GuiImageNinePiece are based on the inside, border gets drawn outside of the area (not 100% sure)
     local border_size = self:GetBorderSize()
     local width_with_padding = inner_width + self.style.padding_left + self.style.padding_right
     local height_with_padding = inner_height + self.style.padding_top + self.style.padding_bottom
-    width_with_padding = math.max(self.style.width or 0, width_with_padding)
-    height_with_padding = math.max(self.style.height or 0, height_with_padding)
+    width_with_padding = math.max((self.style.width or 0) - border_size * 2, width_with_padding)
+    height_with_padding = math.max((self.style.height or 0) - border_size * 2, height_with_padding)
     GuiImageNinePiece(gui, new_id(), x + border_size, y + border_size, width_with_padding, height_with_padding)
   end
 end
