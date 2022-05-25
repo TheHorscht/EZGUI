@@ -8,7 +8,6 @@ local Slider = new_class("Slider", function(self, xml_element, data_context)
   self:ReadAttribute(xml_element, "min", 0)
   self:ReadAttribute(xml_element, "max", 100)
   self:ReadAttribute(xml_element, "default", 0)
-  -- self.width = tonumber(xml_element.attr.width) or 100
   self:ReadAttribute(xml_element, "precision", 0, tonumber)
   self.min_width = 30
 end, DOMElement)
@@ -32,17 +31,6 @@ function Slider:GetContentDimensions(gui, data_context)
   local slider_width, text_width = get_slider_and_text_width(self)
   return slider_width + text_width, 8
 end
-
--- function Slider:GetInnerAndOuterDimensions(gui, data_context)
---   local slider_width, text_width = get_slider_and_text_width(self)
---   local inner_width = slider_width + text_width
---   local inner_height = 8
---   local outer_width = inner_width + self.style.padding_left + self.style.padding_right
---   local outer_height = inner_height + self.style.padding_top + self.style.padding_bottom
---   outer_width = math.max(outer_width, self.style.width or 0, self.min_width)
---   outer_height = math.max(outer_height, self.style.height or 0)
---   return inner_width, inner_height, outer_width, outer_height
--- end
 
 function Slider:Render(gui, new_id, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end

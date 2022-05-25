@@ -15,16 +15,6 @@ function Image:GetContentDimensions(gui, data_context)
   return image_width * self.scaleX, image_height * self.scaleY
 end
 
--- function Image:GetInnerAndOuterDimensions(gui)
---   if not gui then error("Required parameter #1: GuiObject", 2) end
---   local inner_width, inner_height = GuiGetImageDimensions(gui, self.src, 1)
---   local outer_width = inner_width * self.scaleX + self.style.padding_left + self.style.padding_right
---   local outer_height = inner_height * self.scaleY + self.style.padding_top + self.style.padding_bottom
---   outer_width = math.max(outer_width, self.style.width or 0)
---   outer_height = math.max(outer_height, self.style.height or 0)
---   return inner_width, inner_height, outer_width, outer_height
--- end
-
 function Image:Render(gui, new_id, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context", 2) end

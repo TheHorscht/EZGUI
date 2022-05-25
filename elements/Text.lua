@@ -30,26 +30,6 @@ function Text:GetContentDimensions(gui, data_context)
   return content_width, content_height
 end
 
--- function Text:GetInnerAndOuterDimensions(gui, data_context)
---   if not gui then error("Required parameter #1: GuiObject", 2) end
---   if not data_context then error("Required parameter #2: data_context:table", 2) end
---   local text = inflate(self.value, data_context)
---   -- split text into lines
---   local lines = utils.split_lines(text)
---   local inner_width, inner_height = 0, 0
---   for i, line in ipairs(lines) do
---     line = trim(line)
---     local w, h = GuiGetTextDimensions(gui, line)
---     inner_width = math.max(inner_width, w)
---     inner_height = inner_height + h
---   end
---   local outer_width = inner_width + self.style.padding_left + self.style.padding_right
---   local outer_height = inner_height + self.style.padding_top + self.style.padding_bottom
---   outer_width = math.max(outer_width, self.style.width or 0)
---   outer_height = math.max(outer_height, self.style.height or 0)
---   return inner_width, inner_height, outer_width, outer_height
--- end
-
 function Text:Render(gui, new_id, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context", 2) end

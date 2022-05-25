@@ -256,8 +256,6 @@ end
 
 function DOMElement:GetRenderOffset(gui, data_context)
   local content_width, content_height = self:GetContentDimensions(gui, data_context)
-  -- TODO: Return something like content_width without padding from the child instead of subtracting padding here?
-  -- Because it's like adding it first and then subtracting it again?...
   local border_size = self:GetBorderSize()
   content_width = content_width + self.style.padding_left + self.style.padding_right + border_size * 2
   content_height = content_height + self.style.padding_top + self.style.padding_bottom + border_size * 2

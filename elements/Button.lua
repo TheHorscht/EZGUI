@@ -26,19 +26,6 @@ function Button:GetContentDimensions(gui, data_context)
   return text_width, text_height
 end
 
--- function Button:GetInnerAndOuterDimensions(gui, data_context)
---   if not gui then error("Required parameter #1: GuiObject", 2) end
---   if not data_context then error("Required parameter #2: data_context:table", 2) end
---   local text = inflate(self.value, data_context)
---   local inner_width, inner_height = GuiGetTextDimensions(gui, text)
---   local border_size = self.style.border and self.border_size or 0
---   local outer_width = inner_width + border_size * 2 + self.style.padding_left + self.style.padding_right
---   local outer_height = inner_height + border_size * 2 + self.style.padding_top + self.style.padding_bottom
---   outer_width = math.max(outer_width, self.style.width or 0)
---   outer_height = math.max(outer_height, self.style.height or 0)
---   return inner_width, inner_height, outer_width, outer_height
--- end
-
 function Button:Render(gui, new_id, data_context, layout)
   local text = inflate(self.value, data_context)
   local content_width, content_height, outer_width, outer_height = self:GetDimensions(gui, data_context)
@@ -49,10 +36,10 @@ function Button:Render(gui, new_id, data_context, layout)
   end
   local z = self:GetZ()
   -- Draw an invisible nine piece which catches mouse clicks, this is to have exact control over the clickable area, which should include padding
-  local click_area_width = outer_width - border_size * 2 -- - self.style.padding_left - self.style.padding_right
-  local click_area_height = outer_height - border_size * 2 -- - self.style.padding_top - self.style.padding_bottom
+  local click_area_width = outer_width - border_size * 2
+  local click_area_height = outer_height - border_size * 2
   GuiZSetForNextWidget(gui, z - 2)
-  GuiImageNinePiece(gui, new_id(), x + border_size, y + border_size, click_area_width, click_area_height, 0) -- 0.5
+  GuiImageNinePiece(gui, new_id(), x + border_size, y + border_size, click_area_width, click_area_height, 0)
   local clicked, right_clicked, hovered, _x, _y, width, height, draw_x, draw_y, draw_width, draw_height = GuiGetPreviousWidgetInfo(gui)
 
   -- Draw an invisible image while the button is hovered which prevents mouse clicks from firing wands etc

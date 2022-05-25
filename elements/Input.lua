@@ -23,17 +23,6 @@ function Input:GetContentDimensions(gui, data_context)
   return inner_width, inner_height
 end
 
--- function Input:GetInnerAndOuterDimensions(gui, data_context)
---   if not gui then error("Required parameter #1: GuiObject", 2) end
---   if not data_context then error("Required parameter #2: data_context:table", 2) end
---   local inner_width, inner_height = math.max(self.min_width, self.style.width), 11
---   local outer_width = inner_width + self.style.padding_left + self.style.padding_right
---   local outer_height = inner_height + self.style.padding_top + self.style.padding_bottom
---   outer_width = math.max(outer_width, self.min_width, self.style.width or 0)
---   outer_height = math.max(outer_height, self.style.height or 0)
---   return inner_width, inner_height, outer_width, outer_height
--- end
-
 function Input:Render(gui, new_id, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context", 2) end
