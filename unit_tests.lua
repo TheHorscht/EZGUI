@@ -332,4 +332,42 @@ function testStuff()
   lu.assertEquals(parser.read_hex_color("  #FF00FF  "), { r = 1, g = 0, b = 1, a = 1 })
 end
 
+function testText()
+  local Text = dofile_once("%PATH%elements/Text.lua")
+  local data_context = {}
+  local text = Text(nxml.parse([[
+    <Text>Hello</Text>
+  ]]), data_context)
+   -- 30 wide, 10 high
+  -- layout.style.border = true
+  text.style.padding = "1"
+  local content_width, content_height, outer_width, outer_height = text:GetDimensions({}, data_context)
+  lu.assertEquals(text:GetBorderSize(), 0)
+  lu.assertEquals(content_width, 30)
+  lu.assertEquals(content_height, 10)
+  lu.assertEquals(outer_width, 32)
+  lu.assertEquals(outer_height, 12)
+end
+
+function test_Layout()
+  local Layout = dofile_once("%PATH%elements/Layout.lua")
+  local Text = dofile_once("%PATH%elements/Text.lua")
+  local data_context = {}
+  local xml_element = nxml.parse([[
+    <Layout><Text>Hello</Text></Layout>
+  ]])
+  local layout = Layout(xml_element, data_context)
+  layout:AddChild(Text(nxml.parse([[
+    <Text>Hello</Text>
+  ]]), data_context)) -- 30 wide, 10 high
+  layout.style.border = true
+  layout.style.padding = "5 10"
+  local content_width, content_height, outer_width, outer_height = layout:GetDimensions({}, data_context)
+  lu.assertEquals(layout:GetBorderSize(), 3)
+  lu.assertEquals(content_width, 30)
+  lu.assertEquals(content_height, 10)
+  lu.assertEquals(outer_width, 56)
+  lu.assertEquals(outer_height, 26)
+end
+
 lu.LuaUnit.run()

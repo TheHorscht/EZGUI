@@ -76,10 +76,6 @@ return {
       for i, filepath in ipairs(files) do
         local content = ModTextFileGetContent(filepath)
         local s = content:gsub("%%PATH%%", self_path)
-        if filepath == "mods/EZGUI_example/lib/EZGUI/elements/Layout.lua" then
-          print('self_path (' .. tostring(self_path) .. ':'.. type(self_path) .. ')')
-          print('s: ' .. s:sub(1, 100))
-        end
         ModTextFileSetContent(filepath, s)
       end
     end

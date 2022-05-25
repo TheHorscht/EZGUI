@@ -127,11 +127,16 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
           return (self.parent and self.parent.style[key]) or css_props[key].default
         else
           -- Get default
-          local default = self.default_style[key] or css_props[key].default
+          local default = self.default_style[key] -- or css_props[key].default
           local superclass = self.__superclass
           while default == nil and superclass do
             default = superclass.default_style[key]
             superclass = superclass.__superclass
+          end
+          -- If we still haven't found a default defined on the class hierarchy chain's default_styles,
+          -- use css props default
+          if not default then
+            default = css_props[key].default
           end
           return default
         end
@@ -210,6 +215,8 @@ DOMElement.default_style = {
   margin_top = 0,
   margin_right = 0,
   margin_bottom = 0,
+  border = false,
+  border_size = 3,
 }
 
 function DOMElement:QuerySelector(selector_string)
@@ -232,23 +239,48 @@ function DOMElement:QuerySelector(selector_string)
   return find_matching_self_or_child(self)
 end
 
--- Subclasses need to implement GetInnerAndOuterDimensions()
 function DOMElement:GetDimensions(gui, data_context)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context:table", 2) end
-  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)
-  return outer_width, outer_height
+  local content_width, content_height = self:GetContentDimensions(gui, data_context)
+  local border_size = self:GetBorderSize()
+  local outer_width = content_width + self.style.padding_left + self.style.padding_right + border_size * 2
+  local outer_height = content_height + self.style.padding_top + self.style.padding_bottom + border_size * 2
+  -- return content_width, content_height, outer_width, outer_height
+  -- return content_width, content_height, math.max((self.style.width or 0), outer_width), math.max((self.style.height or 0), outer_height)
+  return content_width, content_height, math.max((self.style.width or 0) + border_size * 2, outer_width), math.max((self.style.height or 0) + border_size * 2, outer_height)
+end
+
+-- Just a shortcut for self.style.border and self.style.border_size or 0
+function DOMElement:GetBorderSize()
+  return self.style.border and self.style.border_size or 0
 end
 
 function DOMElement:GetRenderOffset(gui, data_context)
-  local inner_width, inner_height, outer_width, outer_height = self:GetInnerAndOuterDimensions(gui, data_context)
+  local content_width, content_height = self:GetContentDimensions(gui, data_context)
   -- TODO: Return something like content_width without padding from the child instead of subtracting padding here?
   -- Because it's like adding it first and then subtracting it again?...
-  local space_to_move_x = outer_width - (inner_width + self.style.padding_left + self.style.padding_right)
-  local space_to_move_y = outer_height - (inner_height + self.style.padding_top + self.style.padding_bottom)
+  content_width = content_width + self.style.padding_left + self.style.padding_right
+  content_height = content_height + self.style.padding_top + self.style.padding_bottom
+  local space_to_move_x = math.max(self.style.width or 0, content_width) - content_width
+  local space_to_move_y = math.max(self.style.height or 0, content_height) - content_height
   local x_translate_scale = ({ left=0, center=0.5, right=1 })[self.style.align_self_horizontal]
   local y_translate_scale = ({ top=0, center=0.5, bottom=1 })[self.style.align_self_vertical]
   return x_translate_scale * space_to_move_x, y_translate_scale * space_to_move_y
+end
+
+function DOMElement:RenderBorder(gui, new_id, x, y, z, inner_width, inner_height)
+  if self.style.border then
+    GuiZSetForNextWidget(gui, z + 1) -- + 1
+    -- GuiOptionsAddForNextWidget(gui, GUI_OPTION.Layout_NoLayouting)
+    -- Width and height are based on the inside
+    local border_size = self:GetBorderSize()
+    local width_with_padding = inner_width + self.style.padding_left + self.style.padding_right
+    local height_with_padding = inner_height + self.style.padding_top + self.style.padding_bottom
+    width_with_padding = math.max(self.style.width or 0, width_with_padding)
+    height_with_padding = math.max(self.style.height or 0, height_with_padding)
+    GuiImageNinePiece(gui, new_id(), x + border_size, y + border_size, width_with_padding, height_with_padding)
+  end
 end
 
 function DOMElement:AddChild(child)

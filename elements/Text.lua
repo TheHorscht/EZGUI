@@ -14,43 +14,56 @@ local Text = new_class("Text", function(self, xml_element, data_context)
   self.value = parsers.parse_text(trim(xml_element:text()))
 end, DOMElement)
 
-function Text:GetInnerAndOuterDimensions(gui, data_context)
+function Text:GetContentDimensions(gui, data_context)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context:table", 2) end
   local text = inflate(self.value, data_context)
   -- split text into lines
   local lines = utils.split_lines(text)
-  local inner_width, inner_height = 0, 0
+  local content_width, content_height = 0, 0
   for i, line in ipairs(lines) do
     line = trim(line)
     local w, h = GuiGetTextDimensions(gui, line)
-    inner_width = math.max(inner_width, w)
-    inner_height = inner_height + h
+    content_width = math.max(content_width, w)
+    content_height = content_height + h
   end
-  local outer_width = inner_width + self.style.padding_left + self.style.padding_right
-  local outer_height = inner_height + self.style.padding_top + self.style.padding_bottom
-  outer_width = math.max(outer_width, self.style.width or 0)
-  outer_height = math.max(outer_height, self.style.height or 0)
-  return inner_width, inner_height, outer_width, outer_height
+  return content_width, content_height
 end
+
+-- function Text:GetInnerAndOuterDimensions(gui, data_context)
+--   if not gui then error("Required parameter #1: GuiObject", 2) end
+--   if not data_context then error("Required parameter #2: data_context:table", 2) end
+--   local text = inflate(self.value, data_context)
+--   -- split text into lines
+--   local lines = utils.split_lines(text)
+--   local inner_width, inner_height = 0, 0
+--   for i, line in ipairs(lines) do
+--     line = trim(line)
+--     local w, h = GuiGetTextDimensions(gui, line)
+--     inner_width = math.max(inner_width, w)
+--     inner_height = inner_height + h
+--   end
+--   local outer_width = inner_width + self.style.padding_left + self.style.padding_right
+--   local outer_height = inner_height + self.style.padding_top + self.style.padding_bottom
+--   outer_width = math.max(outer_width, self.style.width or 0)
+--   outer_height = math.max(outer_height, self.style.height or 0)
+--   return inner_width, inner_height, outer_width, outer_height
+-- end
 
 function Text:Render(gui, new_id, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context", 2) end
   local text = inflate(self.value, data_context)
   local lines = utils.split_lines(text)
-  local width, height = self:GetDimensions(gui, data_context)
+  local width, height, outer_width, outer_height = self:GetDimensions(gui, data_context)
+  local border_size = self:GetBorderSize()
   local line_height = (height - self.style.padding_top - self.style.padding_bottom) / #lines
   local x, y = self.style.margin_left, self.style.margin_top
+  local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
   if layout then
-    x, y = layout:GetPositionForWidget(gui, data_context, self, width, height)
+    x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
   end
-  local z
-  if layout then
-    z = layout:GetZ()
-  else
-    z = self:GetZ()
-  end
+  local z = self:GetZ()
   for i, line in ipairs(lines) do
     line = trim(line)
     GuiZSetForNextWidget(gui, z)
@@ -58,46 +71,9 @@ function Text:Render(gui, new_id, data_context, layout)
       local c = self.style.color
       GuiColorSetForNextWidget(gui, c.r, c.g, c.b, math.max(c.a, 0.001))
     end
-    GuiText(gui, x + self.style.padding_left, y + self.style.padding_top + (i-1) * line_height, line)
+    GuiText(gui, x + offset_x + border_size + self.style.padding_left, y + offset_y + border_size + self.style.padding_top + (i-1) * line_height, line)
   end
-
-  if self.attr.debug then
-    -- Debug rendering
-    -- Red = margin
-    -- Blue = padding
-    -- Green = content
-    local function render_debug_rect(x, y, width, height, color)
-      if width > 0 and height > 0 then
-        GuiZSetForNextWidget(gui, z - 50)
-        local r, g, b = unpack(({
-          red = { 1, 0, 0 },
-          green = { 0, 1, 0 },
-          blue = { 0, 0, 1 },
-        })[color])
-        GuiColorSetForNextWidget(gui, r, g, b, 1)
-        GuiImage(gui, 9999, x, y, "data/debug/whitebox.png", 0.5, width / 20, height / 20)
-      end
-    end
-    -- Margins
-    -- Top
-    render_debug_rect(x - self.style.margin_left, y - self.style.margin_top, width + self.style.margin_left + self.style.margin_right, self.style.margin_top, "red")
-    -- Left
-    render_debug_rect(x - self.style.margin_left, y, self.style.margin_left, height, "red")
-    -- Right
-    render_debug_rect(x + width, y, self.style.margin_right, height, "red")
-    -- Bottom
-    render_debug_rect(x - self.style.margin_left, y + height, width + self.style.margin_left + self.style.margin_right, self.style.margin_bottom, "red")
-
-    -- Padding
-    -- Top
-    render_debug_rect(x, y, width, self.style.padding_top, "blue")
-    -- Left
-    render_debug_rect(x, y + self.style.padding_top, self.style.padding_left, height - self.style.padding_top - self.style.padding_bottom, "blue")
-    -- Right
-    render_debug_rect(x + width - self.style.padding_right, y + self.style.padding_top, self.style.padding_right, height - self.style.padding_top - self.style.padding_bottom, "blue")
-    -- Bottom
-    render_debug_rect(x, y + height - self.style.padding_bottom, width, self.style.padding_bottom, "blue")
-  end
+  self:RenderBorder(gui, new_id, x, y, z, width, height)
 end
 
 return Text

@@ -5,48 +5,66 @@ local data = {
   elements = {
     "Bloo", "Blaa", "Blee",
   },
+  position = {},
   align_items_horizontal = "center",
   align_items_vertical = "top",
   align_self_horizontal = "center",
   align_self_vertical = "top",
   direction = "vertical",
-  pleft = {
-    val = 22
-  },
-  margin_left = 0,
+  button_margin = 0,
   margin_top = 0,
   margin_right = 0,
   margin_bottom = 0,
   padding_left = 0,
   padding_top = 0,
+  padding_right = 0,
+  color = { r = 1, g = 1, b = 1, a = 1 },
   padding = 0,
   margin = 0,
   width = 0,
+  user = {
+    name = "What"
+  },
   height = 0,
-  color = { r = 1, g = 1, b = 1, a = 1 },
-  padding_right = 0,
+  ip = "123.123.123.133",
+  port = 99,
   padding_bottom = 0,
-  increase_counter = function(data, element, amount)
-    data.counter = data.counter + amount
+  condition_true = true,
+  condition_false = false,
+  set_alignment = function(alignment)
+    if ({left=1, hcenter=1, right=1})[alignment] then
+      self.align_self_horizontal = ({left="left", hcenter="center", right="right"})[alignment]
+    else
+      self.align_self_vertical = ({top="top", vcenter="center", bottom="bottom"})[alignment]
+    end
   end,
-  add_element = function(data, element)
-    table.insert(data.elements, "New element!")
+  condition_func = function()
+    return math.floor(GameGetFrameNum() / 60) % 2 == 0
   end,
-  remove_element = function(data, element)
-    table.remove(data.elements, #data.elements)
+  debug_layout = true,
+  debug_text = true,
+  debug_button = true,
+  set_align_items_horizontal = function(alignment)
+    self.align_items_horizontal = alignment
   end,
-  move_down = function(data, element, amount)
-    element.parent.margin_top = element.parent.margin_top + amount
+  set_align_items_vertical = function(alignment)
+    self.align_items_vertical = alignment
   end,
-  set_align_items_horizontal = function(data, element, alignment)
-    data.align_items_horizontal = alignment
+  set_direction = function(direction)
+    self.direction = direction
   end,
-  set_align_items_vertical = function(data, element, alignment)
-    data.align_items_vertical = alignment
+  toggle_debug_layout = function()
+    self.debug_layout = not self.debug_layout
   end,
-  set_direction = function(data, element, direction)
-    data.direction = direction
+  toggle_debug_text = function(direction)
+    self.debug_text = not self.debug_text
   end,
+  toggle_debug_button = function()
+    self.debug_button = not self.debug_button
+  end,
+  start_server = function(direction)
+    GamePrint("Blob")
+  end
 }
 
 dofile_once("unit_tests.lua")
@@ -55,4 +73,4 @@ local parser = dofile_once("parsing_functions.lua")
 local pretty = dofile_once("lib/pretty.lua")
 local css = dofile_once("css.lua")
 
-local a = d(0, 0, "../../gui2.xml", data)
+-- local a = d(0, 0, "../../gui2.xml", data)
