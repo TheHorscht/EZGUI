@@ -23,6 +23,7 @@
       <a href="#Image">Image</a>
       <a href="#Slider">Slider</a>
       <a href="#Text">Text</a>
+      <a href="#Input">Input</a>
     </div>
     <a href="#Properties">Properties</a>
     <div class="submenu">
@@ -46,7 +47,7 @@
     </div>
   </div>
   <div class="pageWrapper">
-    <h1>EZGUI v0.1.4 Reference</h1>
+    <h1>EZGUI v0.2.0 Reference</h1>
     <div class="elements">
       <h2 id="Elements">Elements</h2>
       <div class="element" id="DOMElement (All Elements)" data-noclear>
@@ -74,29 +75,82 @@ Result:
       </div>
       <div class="element" id="Layout" data-noclear>
         <h3 class="elementName">Layout</h2>
-        <span class="elementDescription">Responsible for positioning items, either horizontally or vertically (set by the CSS property <a href="#direction">direction</a>)</span>
+        <span class="elementDescription">Responsible for positioning items, either horizontally or vertically (set by the CSS property <a href="#direction">direction</a>).</span>
         <h4>Attributes</h4>
         <div class="attribute">
           <h4 class="attributeName">debug</h4>
           <div class="attributeValues">[ boolean ]</div>
-          <span class="attributeDescription">Renders a debug overlay for padding and content</span>
+          <span class="attributeDescription">Renders a debug overlay for padding and content.</span>
         </div>
       </div>
       <div class="element" id="Button" data-noclear>
         <h3 class="elementName">Button</h2>
-        <span class="elementDescription">Despite it's name it only supports text right now.</span>
+        <span class="elementDescription">A text button. Its padding will be included in the clickable area.</span>
+        <h4>Attributes</h4>
+        <div class="attribute">
+          <h4 class="attributeName">@click</h4>
+          <div class="attributeValues">[ function ]</div>
+          <span class="attributeDescription"></span>
+        </div>
       </div>
       <div class="element" id="Image" data-noclear>
         <h3 class="elementName">Image</h2>
-        <span class="elementDescription">Can you guess what this does?</span>
+        <span class="elementDescription">Renders an image. You can scale it using scaleX and scaleY attributes and add an <span class="highlight">click</span> listener to use it as an ImageButton.</span>
+        <h4>Attributes</h4>
+        <div class="attribute">
+          <h4 class="attributeName">scaleX</h4>
+          <div class="attributeValues">[ number ]</div>
+          <span class="attributeDescription"></span>
+        </div>
+        <div class="attribute">
+          <h4 class="attributeName">scaleY</h4>
+          <div class="attributeValues">[ number ]</div>
+          <span class="attributeDescription"></span>
+        </div>
+        <div class="attribute">
+          <h4 class="attributeName">@click</h4>
+          <div class="attributeValues">[ function ]</div>
+          <span class="attributeDescription"></span>
+        </div>
       </div>
       <div class="element" id="Slider" data-noclear>
         <h3 class="elementName">Slider</h2>
-        <span class="elementDescription">I think you know what a slider is.</span>
+        <span class="elementDescription">A slider :)</span>
+        <h4>Attributes</h4>
+        <div class="attribute">
+          <h4 class="attributeName">min</h4>
+          <div class="attributeValues">[ number ]</div>
+          <span class="attributeDescription"></span>
+        </div>
+        <div class="attribute">
+          <h4 class="attributeName">max</h4>
+          <div class="attributeValues">[ number ]</div>
+          <span class="attributeDescription"></span>
+        </div>
+        <div class="attribute">
+          <h4 class="attributeName">precision</h4>
+          <div class="attributeValues">[ number ]</div>
+          <span class="attributeDescription">Number of digits to show after the decimal point.</span>
+        </div>
       </div>
       <div class="element" id="Text" data-noclear>
         <h3 class="elementName">Text</h2>
         <span class="elementDescription">Self explanatory, really.</span>
+      </div>
+      <div class="element" id="Input" data-noclear>
+        <h3 class="elementName">Input</h2>
+        <span class="elementDescription">An input element for entering text, is kinda buggy but there's nothing I can do about that, it's part of the Noita GUI API.</span>
+        <h4>Attributes</h4>
+        <div class="attribute">
+          <h4 class="attributeName">max_length</h4>
+          <div class="attributeValues">[ number ]</div>
+          <span class="attributeDescription">Maximum number of allowed characters</span>
+        </div>
+        <div class="attribute">
+          <h4 class="attributeName">allowed_characters</h4>
+          <div class="attributeValues">[ string ]</div>
+          <span class="attributeDescription">Example: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</span>
+        </div>
       </div>
     </div>
     <div class="elements">
@@ -139,7 +193,7 @@ Result:
           <div class="attributeValues">[ boolean ]</div>
           <div class="cssAttributeDescription"></div>
         </div>
-        <span class="propertyDescription">Toggles border rendering for certain elements like <a href="#Layout">Layout</a> and <a href="#Button">Button</a>.</span>
+        <span class="propertyDescription">Renders a border around an element.</span>
       </div>
       <div class="element" id="color" data-noclear>
         <h3 class="elementName">color</h3>
