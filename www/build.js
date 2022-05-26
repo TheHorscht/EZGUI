@@ -21,6 +21,9 @@ fs.copyFileSync("script.js", "generated/script.js");
 // fs.copySync("assets", "generated/assets");
 
 Handlebars.registerHelper('description', function (str, codeBlocks) {
+  if(!str) {
+    return "";
+  }
   str = str.replace(/\^([_a-zA-Z0-9]+)/g, `<a href="#$1">$1</a>`)
   str = str.replace(/@(.+?(?=[^a-zA-Z0-9]))/g, `<span class="highlight">$1</span>`)
   str = str.replace(/\n/g, `<br>`)
