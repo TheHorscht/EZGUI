@@ -1,3 +1,5 @@
+- Fix multiple GUIs not working correctly
+
 v0.2.0:
 - Images now support the @click attribute to basically create an ImageButton
 - Add Input element

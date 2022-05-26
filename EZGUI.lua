@@ -166,9 +166,12 @@ return {
       end
     end
     local _gui = GuiCreate()
+    local frame_started
     local observing = {}
     return function(x, y, content, data, gui)
-      if not gui then
+      local frame_num = GameGetFrameNum()
+      if not gui and frame_started ~= frame_num then
+        frame_started = frame_num
         GuiStartFrame(_gui)
       end
       if not observing[data] then
@@ -187,7 +190,10 @@ return {
       end
       local new_id = create_id_generator()
       local root_layout = dom_cache[content]
-      return root_layout:Render(gui, new_id, data)
+      GuiIdPushString(gui, "EZGUI_" .. tostring(content))
+      local width, height = root_layout:Render(gui, new_id, data)
+      GuiIdPop(gui)
+      return width, height
     end
   end
 }
