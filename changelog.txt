@@ -1,4 +1,7 @@
+v0.2.0:
 - Images now support the @click attribute to basically create an ImageButton
+- Add Input element
+- (Button): Change default style to 'border: true'
 - BREAKING: Methods now automatically have access to 'self' (which is the data_context) and 'element' which is the element it was triggered on
 - FIX: Button padding was no longer included in the click area
 

@@ -1,6 +1,7 @@
 const bool = typeof true;
 const string = typeof "";
 const number = typeof 0;
+const func = "function";
 const loop_expression = "loop expression";
 const color = "RGB(A) Hex Color #FFFFFF(FF)";
 const direction = "horizontal | vertical";
@@ -36,30 +37,75 @@ local data_context = {
     },
     {
       name: "Layout",
-      description: "Responsible for positioning items, either horizontally or vertically (set by the CSS property ^direction)",
+      description: "Responsible for positioning items, either horizontally or vertically (set by the CSS property ^direction).",
       attributes: [{
         name: "debug",
         values: [
           [bool]
         ],
-        description: "Renders a debug overlay for padding and content"
+        description: "Renders a debug overlay for padding and content."
       }]
     },
     {
       name: "Button",
-      description: "Despite it's name it only supports text right now.",
+      attributes: [{
+        name: "@click",
+        values: [ [func] ],
+      }],
+      description: "A text button. Its padding will be included in the clickable area.",
     },
     {
       name: "Image",
-      description: "Can you guess what this does?",
+      attributes: [{
+        name: "scaleX",
+        values: [ [number] ],
+      },{
+        name: "scaleY",
+        values: [ [number] ],
+      },
+      {
+        name: "@click",
+        values: [ [func] ],
+      }],
+      description: "Renders an image. You can scale it using scaleX and scaleY attributes and add an @click listener to use it as an ImageButton.",
     },
     {
       name: "Slider",
-      description: "I think you know what a slider is.",
+      attributes: [{
+        name: "min",
+        values: [ [number] ],
+      },{
+        name: "max",
+        values: [ [number] ],
+      },
+      {
+        name: "precision",
+        values: [ [number] ],
+        description: "Number of digits to show after the decimal point."
+      }],
+      description: "A slider :)",
     },
     {
       name: "Text",
       description: "Self explanatory, really.",
+    },
+    {
+      name: "Input",
+      description: "An input element for entering text, is kinda buggy but there's nothing I can do about that, it's part of the Noita GUI API.",
+      attributes: [{
+        name: "max_length",
+        values: [
+          [number]
+        ],
+        description: "Maximum number of allowed characters"
+      },
+      {
+        name: "allowed_characters",
+        values: [
+          [string]
+        ],
+        description: "Example: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      }]
     },
   ],
   // CSS Properties
@@ -97,7 +143,7 @@ local data_context = {
       values: [
         { types: [bool] },
       ],
-      description: "Toggles border rendering for certain elements like ^Layout and ^Button.",
+      description: "Renders a border around an element.",
     },
     {
       name: "color",
