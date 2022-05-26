@@ -10,6 +10,8 @@ local Input = new_class("Input", function(self, xml_element, data_context)
   end
   self.binding_target = { type = "binding", target_chain = parser.read_binding_target(xml_element.attr.bind) }
   self.min_width = 30
+  self:ReadAttribute(xml_element, "max_length", 30)
+  self:ReadAttribute(xml_element, "allowed_characters", "")
 end, DOMElement)
 
 Input.default_style = {
@@ -37,7 +39,7 @@ function Input:Render(gui, new_id, data_context, layout)
   end
   local z = self:GetZ()
   GuiZSetForNextWidget(gui, z)
-  local new_text = GuiTextInput(gui, new_id(), x + offset_x + border_size + self.style.padding_left, y + offset_y + border_size + self.style.padding_top, value, width, 50)
+  local new_text = GuiTextInput(gui, new_id(), x + offset_x + border_size + self.style.padding_left, y + offset_y + border_size + self.style.padding_top, value, width, self.attr.max_length, self.attr.allowed_characters)
   if new_text ~= value then
     -- TODO: Refactor this
     local context = data_context
