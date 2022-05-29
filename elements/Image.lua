@@ -43,7 +43,7 @@ function Image:Render(gui, new_id, data_context, layout)
   GuiZSetForNextWidget(gui, z - 2)
   GuiImageNinePiece(gui, new_id(), x + border_size, y + border_size, click_area_width, click_area_height, 0)
   local clicked, right_clicked, hovered, _x, _y, width, height, draw_x, draw_y, draw_width, draw_height = GuiGetPreviousWidgetInfo(gui)
-  if clicked then
+  if clicked and self.onClick then
     self.onClick.execute(data_context, self)
   end
   -- Draw an invisible image while the button is hovered which prevents mouse clicks from firing wands etc
