@@ -50,7 +50,7 @@ end
 -- passing along a data context with loop variables inserted
 function loop_call(dom_element, data_context, func, ...)
   if dom_element.loop then
-    for i, v in ipairs(data_context[dom_element.loop.binding_target]) do
+    for i, v in data_context[dom_element.loop.binding_target].__ipairs do
       local new_context = setmetatable({}, { __index = data_context })
       if dom_element.loop.iter_variable then
         new_context[dom_element.loop.iter_variable] = i

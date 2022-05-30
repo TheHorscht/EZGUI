@@ -4,55 +4,6 @@
 
 local _ModTextFileGetContent = ModTextFileGetContent
 
-function shallow_copy(t)
-  local t2 = {}
-  for k,v in pairs(t) do
-    t2[k] = v
-  end
-  return t2
-end
-
--- Thanks to dextercd#7326 on Discord for helping me debug this and coming up with the final working version
-local function make_observable(t, key, prev_keys)
-  if type(t) ~= "table" or getmetatable(t) then
-    return
-  end
-
-  local prev_keys = prev_keys or {}
-  local _data = {}
-
-  if key then
-    table.insert(prev_keys, key)
-  end
-
-  for k, v in pairs(t) do
-    _data[k] = v
-    t[k] = nil
-    make_observable(v, k, shallow_copy(prev_keys))
-  end
-
-  setmetatable(t, {
-    __index = function(self, key)
-      return _data[key]
-    end,
-
-    __newindex = function(self, key, value)
-      if type(value) == "table" then
-        make_observable(value, key, shallow_copy(prev_keys))
-      end
-      _data[key] = value
-
-      path = table.concat(prev_keys, ".")
-      if path ~= '' then
-        path = path .. '.'
-      end
-      path = path .. key
-
-      -- print(path .. " changed!")
-    end
-  })
-end
-
 return {
   init = function(self_path)
     if self_path then
@@ -93,6 +44,7 @@ return {
     local utils = dofile_once(self_path .. "utils.lua")
     local css = dofile_once(self_path .. "css.lua")
     local parser = dofile_once(self_path .. "parsing_functions.lua")
+    local utils = dofile_once(self_path .. "utils.lua")
 
     local DOM_Elements = {
       Layout = Layout,
@@ -174,10 +126,10 @@ return {
         frame_started = frame_num
         GuiStartFrame(_gui)
       end
-      -- if not observing[data] then
-      --   make_observable(data)
-      --   observing[data] = true
-      -- end
+      if not observing[data] then
+        utils.make_observable(data)
+        observing[data] = true
+      end
       gui = gui or _gui
       if not dom_cache[content] then
         if type(content) == "string" then

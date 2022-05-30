@@ -370,4 +370,48 @@ function test_Layout()
   lu.assertEquals(outer_height, 26)
 end
 
+function test_observable()
+  local utils = dofile_once("%PATH%utils.lua")
+  local data = {
+    players = {
+      { name = "Hello", ping = 10 },
+      { name = "Hello2", ping = 130 },
+      { name = "Hello2", ping = 130 },
+    },
+    boop = 1,
+    stoop = { glob = { 5, 6 } }
+  }
+  local changed = {}
+  utils.make_observable(data, nil, nil, function(path)
+    table.insert(changed, path)
+  end)
+
+  local bla = {}
+  for k, v in data.players[2].__pairs do
+    bla[k] = v
+  end
+  lu.assertEquals(bla, { name = "Hello2", ping = 130 })
+
+  local bla = {}
+  for k, v in data.stoop.glob.__ipairs do
+    bla[k] = v
+  end
+  lu.assertEquals(bla, { 5, 6 })
+
+  data.players[2].ping = 99
+  lu.assertEquals(data.players[2].ping, 99)
+  data.players[1].name = "baapy"
+  lu.assertEquals(data.players[1].name, "baapy")
+  data.boop = { stoopy = 2 }
+  lu.assertEquals(data.boop.stoopy, 2)
+  data.boop.stoopy = false
+  lu.assertEquals(data.boop.stoopy, false)
+  data.stoop.glob[2] = 9
+  lu.assertEquals(data.players.__count, 3)
+  lu.assertEquals(data.players[2].ping, 99)
+  lu.assertEquals(data.players[1].name, "baapy")
+  lu.assertEquals(data.boop.stoopy, false)
+  lu.assertItemsEquals(changed, { "players.2.ping", "players.1.name", "boop", "boop.stoopy", "stoop.glob.2" })
+end
+
 lu.LuaUnit.run()

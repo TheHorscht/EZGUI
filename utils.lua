@@ -64,9 +64,79 @@ local function get_data_from_binding_chain(data_context, binding_target_chain)
   return data_context
 end
 
+local function shallow_copy(t)
+  local t2 = {}
+  for k,v in pairs(t) do
+    t2[k] = v
+  end
+  return t2
+end
+
+-- Thanks to dextercd#7326 on Discord for helping me debug this and coming up with the final working version
+local function make_observable(t, key, prev_keys, callback)
+  if type(t) ~= "table" or getmetatable(t) then
+    return
+  end
+
+  local prev_keys = prev_keys or {}
+  local _data = {}
+
+  if key then
+    table.insert(prev_keys, key)
+  end
+
+  for k, v in pairs(t) do
+    _data[k] = v
+    t[k] = nil
+    make_observable(v, k, shallow_copy(prev_keys), callback)
+  end
+
+  setmetatable(t, {
+    __index = function(self, key)
+      if key == "__count" then
+        return #_data
+      elseif key == "__ipairs" then
+        local i = 0
+        return function()
+          i = i + 1
+          if _data[i] then
+            return i, _data[i]
+          end
+        end
+      elseif key == "__pairs" then
+        local next_key
+        return function()
+          local key, val = next(_data, next_key)
+          next_key = key
+          return key, val
+        end
+      end
+      return _data[key]
+    end,
+
+    __newindex = function(self, key, value)
+      if type(value) == "table" then
+        make_observable(value, key, shallow_copy(prev_keys), callback)
+      end
+      _data[key] = value
+
+      path = table.concat(prev_keys, ".")
+      if path ~= '' then
+        path = path .. '.'
+      end
+      path = path .. key
+
+      if callback then
+        callback(path)
+      end
+    end
+  })
+end
+
 return {
   split_lines = split_lines,
   throw_error = throw_error,
   get_line_by_pos = get_line_by_pos,
-  get_data_from_binding_chain = get_data_from_binding_chain
+  get_data_from_binding_chain = get_data_from_binding_chain,
+  make_observable = make_observable
 }
