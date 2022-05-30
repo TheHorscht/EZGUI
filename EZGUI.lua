@@ -174,10 +174,10 @@ return {
         frame_started = frame_num
         GuiStartFrame(_gui)
       end
-      if not observing[data] then
-        make_observable(data)
-        observing[data] = true
-      end
+      -- if not observing[data] then
+      --   make_observable(data)
+      --   observing[data] = true
+      -- end
       gui = gui or _gui
       if not dom_cache[content] then
         if type(content) == "string" then
