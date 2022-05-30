@@ -34,7 +34,9 @@ function Image:Render(gui, new_id, x, y, data_context, layout)
   if self.hovered then
     GuiColorSetForNextWidget(gui, 1, 0, 0, 1)
     GuiZSetForNextWidget(gui, info.z - 3)
-    GuiImage(gui, new_id(), info.x + info.border_size, info.y + info.border_size, "data/debug/whitebox.png", 0, info.click_area_width / 20, info.click_area_height / 20)
+    -- (NOITA BUG) Image click/mouse block area is always width * width
+    local max = math.max(info.click_area_width, info.click_area_height)
+    GuiImage(gui, new_id(), info.x + info.border_size, info.y + info.border_size, "data/debug/whitebox.png", 0.0, max / 20, max / 20)
   end
 end
 
