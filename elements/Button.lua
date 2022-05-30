@@ -26,11 +26,10 @@ function Button:GetContentDimensions(gui, data_context)
   return text_width, text_height
 end
 
-function Button:Render(gui, new_id, data_context, layout)
+function Button:Render(gui, new_id, x, y, data_context, layout)
   local text = inflate(self.value, data_context)
   local content_width, content_height, outer_width, outer_height = self:GetDimensions(gui, data_context)
   local border_size = self:GetBorderSize()
-  local x, y = self.style.margin_left, self.style.margin_top
   if layout then
     x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
   end

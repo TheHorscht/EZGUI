@@ -18,10 +18,9 @@ function Image:GetContentDimensions(gui, data_context)
   return image_width * self.attr.scaleX, image_height * self.attr.scaleY
 end
 
-function Image:Render(gui, new_id, data_context, layout)
+function Image:Render(gui, new_id, x, y, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context", 2) end
-  local x, y = self.style.margin_left, self.style.margin_top
   local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
   local width, height, outer_width, outer_height = self:GetDimensions(gui, data_context)
   local border_size = self:GetBorderSize()

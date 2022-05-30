@@ -4,7 +4,6 @@
 - Store hover status
 - Extend function bindings by writing their content to a virtual file and dofile that and execute it inside context...?
 - Binding to mod settings
-- Change main layout position setting, don't use margin
 - Block comments in CSS
 
 - Parse bound data like color = "#FFFFFF" and do it again whenever it changes?...

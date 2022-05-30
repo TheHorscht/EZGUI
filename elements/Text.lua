@@ -30,7 +30,7 @@ function Text:GetContentDimensions(gui, data_context)
   return content_width, content_height
 end
 
-function Text:Render(gui, new_id, data_context, layout)
+function Text:Render(gui, new_id, x, y, data_context, layout)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context", 2) end
   local text = inflate(self.value, data_context)
@@ -38,7 +38,6 @@ function Text:Render(gui, new_id, data_context, layout)
   local width, height, outer_width, outer_height = self:GetDimensions(gui, data_context)
   local border_size = self:GetBorderSize()
   local line_height = (height - self.style.padding_top - self.style.padding_bottom) / #lines
-  local x, y = self.style.margin_left, self.style.margin_top
   local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
   if layout then
     x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)

@@ -77,10 +77,9 @@ function Layout:GetContentDimensions(gui, data_context)
   return content_width, content_height
 end
 
-function Layout:Render(gui, new_id, data_context, layout)
+function Layout:Render(gui, new_id, x, y, data_context, layout)
   local inner_width, inner_height, outer_width, outer_height = self:GetDimensions(gui, data_context)
   local border_size = self:GetBorderSize()
-  local x, y = self.style.margin_left, self.style.margin_top
   local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
   if layout then
     x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
@@ -111,8 +110,7 @@ function Layout:Render(gui, new_id, data_context, layout)
     end
   end
 
-  local function render_debug_margin_and_padding(x, y, style, border_size, inner_width, inner_height, outer_width, outer_height)
-    -- Margins
+  local function render_debug_margin(x, y, style, border_size, inner_width, inner_height, outer_width, outer_height)
     -- Top
     render_debug_rect(x - style.margin_left, y - style.margin_top, outer_width + style.margin_left + style.margin_right, style.margin_top, "red")
     -- Left
@@ -121,25 +119,17 @@ function Layout:Render(gui, new_id, data_context, layout)
     render_debug_rect(x + outer_width, y, style.margin_right, outer_height, "red")
     -- Bottom
     render_debug_rect(x - style.margin_left, y + outer_height, outer_width + style.margin_left + style.margin_right, style.margin_bottom, "red")
+  end
 
-    -- Padding
-    -- -- Top
-    local render_all = true
-    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 0 then
-      render_debug_rect(x + border_size, y + border_size, inner_width + style.padding_left + style.padding_right, style.padding_top, "blue")
-    end
-    -- -- Left
-    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 1 then
-      render_debug_rect(x + border_size, y + border_size + style.padding_top, style.padding_left, inner_height, "blue")
-    end
-    -- -- Right
-    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 2 then
-      render_debug_rect(x + border_size + inner_width + style.padding_left, y + border_size + style.padding_top, style.padding_right, inner_height, "blue")
-    end
-    -- -- Bottom
-    if render_all or math.floor((GameGetFrameNum() / 45) % 4) == 3 then
-      render_debug_rect(x + border_size, y + border_size + inner_height + style.padding_top, inner_width + style.padding_left + style.padding_right, style.padding_bottom, "blue")
-    end
+  local function render_debug_padding(x, y, style, border_size, inner_width, inner_height, outer_width, outer_height)
+    -- Top
+    render_debug_rect(x + border_size, y + border_size, inner_width + style.padding_left + style.padding_right, style.padding_top, "blue")
+    -- Left
+    render_debug_rect(x + border_size, y + border_size + style.padding_top, style.padding_left, inner_height, "blue")
+    -- Right
+    render_debug_rect(x + border_size + inner_width + style.padding_left, y + border_size + style.padding_top, style.padding_right, inner_height, "blue")
+    -- Bottom
+    render_debug_rect(x + border_size, y + border_size + inner_height + style.padding_top, inner_width + style.padding_left + style.padding_right, style.padding_bottom, "blue")
   end
 
   self.next_element_x = x + offset_x + border_size
@@ -155,16 +145,17 @@ function Layout:Render(gui, new_id, data_context, layout)
           local x, y, offset_x, offset_y = self:GetPositionForWidget(gui, data_context, child, child_outer_width, child_outer_height)
           local inner_width = child_outer_width - child.style.padding_left - child.style.padding_right
           local inner_height = child_outer_height - child.style.padding_top - child.style.padding_bottom
-          render_debug_margin_and_padding(x, y, child.style, child_border_size, inner_width - child_border_size * 2, inner_height - child_border_size * 2, child_outer_width, child_outer_height)
+          render_debug_margin(x, y, child.style, child_border_size, inner_width - child_border_size * 2, inner_height - child_border_size * 2, child_outer_width, child_outer_height)
+          render_debug_padding(x, y, child.style, child_border_size, inner_width - child_border_size * 2, inner_height - child_border_size * 2, child_outer_width, child_outer_height)
           -- Content
           if child.style.border then
             x = x + child_border_size
             y = y + child_border_size
           end
-          render_debug_rect(x + offset_x + child.style.padding_left, y + offset_y + child.style.padding_top, child_inner_width, child_inner_height, { 1, 0.2 + (i / #self.children) * 0.8, 0 })
+          render_debug_rect(x + offset_x + child.style.padding_left, y + offset_y + child.style.padding_top, child_inner_width, child_inner_height, "green")
         end
         if not child.show_if or child.show_if() then
-          child:Render(gui, new_id, data_context, self)
+          child:Render(gui, new_id, nil, nil, data_context, self)
         end
         if self.style.direction == "horizontal" then
           self.next_element_x = self.next_element_x + math.max((child.style.width or 0), child_total_width)
@@ -178,7 +169,10 @@ function Layout:Render(gui, new_id, data_context, layout)
   self:RenderBorder(gui, new_id, x, y, z, inner_width, inner_height)
 
   if self.attr.debug then
-    render_debug_margin_and_padding(x, y, self.style, border_size, inner_width, inner_height, outer_width, outer_height)
+    if self.parent then
+      render_debug_margin(x, y, self.style, border_size, inner_width, inner_height, outer_width, outer_height)
+    end
+    render_debug_padding(x, y, self.style, border_size, inner_width, inner_height, outer_width, outer_height)
   end
   return outer_width, outer_height
 end
