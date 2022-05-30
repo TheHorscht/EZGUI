@@ -100,6 +100,7 @@ function Layout:Render(gui, new_id, x, y, data_context, layout)
         r, g, b = unpack(color)
       end
       GuiColorSetForNextWidget(gui, r, g, b, 1)
+      GuiOptionsAddForNextWidget(gui, GUI_OPTION.NonInteractive)
       GuiImage(gui, 9999, x, y, "data/debug/whitebox.png", 0.5, width / 20, height / 20)
     end
   end
