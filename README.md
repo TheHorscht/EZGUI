@@ -93,3 +93,5 @@ Can be used to set the size of an element to a specific size, if the size is big
 and `align_self_vertical` to align its content, kind of like `text-align` in real CSS, but also vertical.
 
 ![alt text](www/assets/box_model.png "Title")
+
+There is also this reference/documentation here: [EZGUI Reference](https://TheHorscht.github.io/EZGUI)
