@@ -27,18 +27,10 @@ function Input:GetContentDimensions(gui, data_context)
 end
 
 function Input:Render(gui, new_id, x, y, data_context, layout)
-  if not gui then error("Required parameter #1: GuiObject", 2) end
-  if not data_context then error("Required parameter #2: data_context", 2) end
-  local width, height = self:GetContentDimensions(gui, data_context)
-  local border_size = self:GetBorderSize()
+  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
   local value = get_value_from_chain_or_not(data_context, self.binding_target)
-  local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
-  if layout then
-    x, y = layout:GetPositionForWidget(gui, data_context, self, width, height)
-  end
-  local z = self:GetZ()
-  GuiZSetForNextWidget(gui, z)
-  local new_text = GuiTextInput(gui, new_id(), x + offset_x + border_size + self.style.padding_left, y + offset_y + border_size + self.style.padding_top, value, width, self.attr.max_length, self.attr.allowed_characters)
+  GuiZSetForNextWidget(gui, info.z)
+  local new_text = GuiTextInput(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left, info.y + info.offset_y + info.border_size + self.style.padding_top, value, info.width, self.attr.max_length, self.attr.allowed_characters)
   if new_text ~= value then
     -- TODO: Refactor this
     local context = data_context
@@ -47,7 +39,6 @@ function Input:Render(gui, new_id, x, y, data_context, layout)
     end
     context[self.binding_target.target_chain[#self.binding_target.target_chain]] = new_text
   end
-  self:RenderBorder(gui, new_id, x, y, z, width, height)
 end
 
 return Input

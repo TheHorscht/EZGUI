@@ -27,47 +27,33 @@ function Button:GetContentDimensions(gui, data_context)
 end
 
 function Button:Render(gui, new_id, x, y, data_context, layout)
+  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
   local text = inflate(self.value, data_context)
-  local content_width, content_height, outer_width, outer_height = self:GetDimensions(gui, data_context)
-  local border_size = self:GetBorderSize()
-  if layout then
-    x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
-  end
-  local z = self:GetZ()
-  -- Draw an invisible nine piece which catches mouse clicks, this is to have exact control over the clickable area, which should include padding
-  local click_area_width = outer_width - border_size * 2
-  local click_area_height = outer_height - border_size * 2
-  GuiZSetForNextWidget(gui, z - 2)
-  GuiImageNinePiece(gui, new_id(), x + border_size, y + border_size, click_area_width, click_area_height, 0)
-  local clicked, right_clicked, hovered, _x, _y, width, height, draw_x, draw_y, draw_width, draw_height = GuiGetPreviousWidgetInfo(gui)
 
   -- Draw an invisible image while the button is hovered which prevents mouse clicks from firing wands etc
-  if hovered then
+  if self.hovered then
     GuiColorSetForNextWidget(gui, 1, 0, 0, 1)
-    GuiZSetForNextWidget(gui, z - 3)
-    GuiImage(gui, new_id(), x + border_size, y + border_size, "data/debug/whitebox.png", self.attr.debug and 0.5 or 0, click_area_width / 20, click_area_height / 20)
+    GuiZSetForNextWidget(gui, info.z - 3)
+    GuiImage(gui, new_id(), info.x + info.border_size, info.y + info.border_size, "data/debug/whitebox.png", self.attr.debug and 0.5 or 0, info.click_area_width / 20, info.click_area_height / 20)
   elseif self.attr.debug then
     GuiColorSetForNextWidget(gui, 0, 1, 0, 1)
-    GuiZSetForNextWidget(gui, z - 3)
-    GuiImage(gui, new_id(), x + border_size, y + border_size, "data/debug/whitebox.png", 0.5, click_area_width / 20, click_area_height / 20)
+    GuiZSetForNextWidget(gui, info.z - 3)
+    GuiImage(gui, new_id(), info.x + info.border_size, info.y + info.border_size, "data/debug/whitebox.png", 0.5, info.click_area_width / 20, info.click_area_height / 20)
   end
 
-  if clicked then
+  if info.clicked then
     self.onClick.execute(data_context, self)
   end
 
-  self:RenderBorder(gui, new_id, x, y, z, content_width, content_height)
-
-  if hovered then
+  if self.hovered then
     GuiColorSetForNextWidget(gui, 1, 1, 0, 1)
   else
     local c = self.style.color or { r = 1, g = 1, b = 1, a = 1 }
     GuiColorSetForNextWidget(gui, c.r, c.g, c.b, math.max(c.a, 0.001))
   end
 
-  local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
-  GuiZSetForNextWidget(gui, z - 4)
-  GuiText(gui, x + offset_x + border_size + self.style.padding_left, y + offset_y + border_size + self.style.padding_top, text)
+  GuiZSetForNextWidget(gui, info.z - 4)
+  GuiText(gui, info.x + info.offset_x + info.border_size + self.style.padding_left, info.y + info.offset_y + info.border_size + self.style.padding_top, text)
 end
 
 return Button

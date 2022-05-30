@@ -266,6 +266,40 @@ function DOMElement:GetRenderOffset(gui, data_context)
   return x_translate_scale * space_to_move_x, y_translate_scale * space_to_move_y
 end
 
+function DOMElement:PreRender(gui, new_id, x, y, data_context, layout)
+  local width, height, outer_width, outer_height = self:GetDimensions(gui, data_context)
+  local border_size = self:GetBorderSize()
+  local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
+  if layout then
+    x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
+  end
+  local z = self:GetZ()
+  -- Draw an invisible nine piece which catches mouse clicks, this is to have exact control over the clickable area, which should include padding
+  local click_area_width = outer_width - border_size * 2
+  local click_area_height = outer_height - border_size * 2
+  GuiZSetForNextWidget(gui, z - 1)
+  GuiImageNinePiece(gui, new_id(), x + border_size, y + border_size, click_area_width, click_area_height, 0)
+  local clicked, right_clicked, hovered, _x, _y, _width, _height, draw_x, draw_y, draw_width, draw_height = GuiGetPreviousWidgetInfo(gui)
+  self.hovered = hovered
+  self:RenderBorder(gui, new_id, x, y, z, width, height)
+  return {
+    x = x,
+    y = y,
+    z = z,
+    width = width,
+    height = height,
+    outer_width = outer_width,
+    outer_height = outer_height,
+    border_size = border_size,
+    offset_x = offset_x,
+    offset_y = offset_y,
+    click_area_width = click_area_width,
+    click_area_height = click_area_height,
+    clicked = clicked,
+    right_clicked = right_clicked
+  }
+end
+
 function DOMElement:RenderBorder(gui, new_id, x, y, z, inner_width, inner_height)
   if self.style.border then
     GuiZSetForNextWidget(gui, z + 1)

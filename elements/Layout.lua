@@ -78,23 +78,17 @@ function Layout:GetContentDimensions(gui, data_context)
 end
 
 function Layout:Render(gui, new_id, x, y, data_context, layout)
-  local inner_width, inner_height, outer_width, outer_height = self:GetDimensions(gui, data_context)
-  local border_size = self:GetBorderSize()
-  local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
-  if layout then
-    x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
-  end
-  local z = self:GetZ()
+  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
   -- Cache it so we don't have to calculate it again every time for GetPositionForWidget
-  self._content_width = inner_width
-  self._content_height = inner_height
+  self._content_width = info.width
+  self._content_height = info.height
   -- Debug rendering
   -- Red = margin
   -- Blue = padding
   -- Green = content
   local function render_debug_rect(x, y, width, height, color)
     if width > 0 and height > 0 then
-      GuiZSetForNextWidget(gui, z - 500000)
+      GuiZSetForNextWidget(gui, info.z - 500000)
       local r, g, b
       if type(color) == "string" then
         r, g, b = unpack(({
@@ -132,8 +126,8 @@ function Layout:Render(gui, new_id, x, y, data_context, layout)
     render_debug_rect(x + border_size, y + border_size + inner_height + style.padding_top, inner_width + style.padding_left + style.padding_right, style.padding_bottom, "blue")
   end
 
-  self.next_element_x = x + offset_x + border_size
-  self.next_element_y = y + offset_y + border_size
+  self.next_element_x = info.x + info.offset_x + info.border_size
+  self.next_element_y = info.y + info.offset_y + info.border_size
   for i, child in ipairs(self.children) do
     if not child.render_if or child.render_if() then
       loop_call(child, data_context, function(child, data_context)
@@ -166,15 +160,13 @@ function Layout:Render(gui, new_id, x, y, data_context, layout)
     end
   end
 
-  self:RenderBorder(gui, new_id, x, y, z, inner_width, inner_height)
-
   if self.attr.debug then
     if self.parent then
-      render_debug_margin(x, y, self.style, border_size, inner_width, inner_height, outer_width, outer_height)
+      render_debug_margin(info.x, info.y, self.style, info.border_size, info.width, info.height, info.outer_width, info.outer_height)
     end
-    render_debug_padding(x, y, self.style, border_size, inner_width, inner_height, outer_width, outer_height)
+    render_debug_padding(info.x, info.y, self.style, info.border_size, info.width, info.height, info.outer_width, info.outer_height)
   end
-  return outer_width, outer_height
+  return info.outer_width, info.outer_height
 end
 
 return Layout
