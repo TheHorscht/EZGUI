@@ -17,7 +17,7 @@ end, DOMElement)
 function Text:GetContentDimensions(gui, data_context)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context:table", 2) end
-  local text = inflate(self.value, data_context)
+  local text = utils.inflate_text(self.value, data_context)
   -- split text into lines
   local lines = utils.split_lines(text)
   local content_width, content_height = 0, 0
@@ -32,7 +32,7 @@ end
 
 function Text:Render(gui, new_id, x, y, data_context, layout)
   local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local text = inflate(self.value, data_context)
+  local text = utils.inflate_text(self.value, data_context)
   local lines = utils.split_lines(text)
   local line_height = (info.height - self.style.padding_top - self.style.padding_bottom) / #lines
   for i, line in ipairs(lines) do

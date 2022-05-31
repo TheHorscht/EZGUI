@@ -53,22 +53,6 @@ local f = parse_text("  (hello, 2  ) {{ shid }}")
 
 -- TODO: Make tests for failures, so it throws the correct errors with correct line numbers etc
 
--- local str = [[  _!.Hello {hoochie}} mama  "]]
--- local result = parse_text(str)
--- expect(#result).to_be(1)
--- expect(result[1].type).to_be("text")
--- expect(result[1].value).to_be(str)
-
--- local result = parse_text("  Hello {{   hoochie}} mama  ")
--- expect(#result).to_be(3)
--- expect(result[1].type).to_be("text")
--- expect(result[1].value).to_be("  Hello ")
--- expect(result[2].type).to_be("binding")
--- expect(result[2].target_chain[1]).to_be("hoochie")
--- expect(result[3].type).to_be("text")
--- expect(result[3].value).to_be(" mama  ")
--- expect(inflate(parse_text("  Hello {{   hoochie.boochie}} mama  "), { hoochie = { boochie = " yes :) " }})).to_be("  Hello  yes :)  mama  ")
-
 --[[ 
 
 assert(does_selector_match({ name = "Text", classes = { "one", "two" }}, { class_name = "two", element_name = "Text" }) == true)
@@ -80,13 +64,12 @@ assert(does_selector_match({ name = "Text" }, { class_name = "one" }) == false)
 assert(does_selector_match({ name = "Text" }, { class_name = "one", element_name = "Text" }) == false)
 assert(does_selector_match({ name = "Text" }, { element_name = "Button" }) == false)
 
-
 --]]
-
 
 local parser = dofile_once("%PATH%parsing_functions.lua")
 local pretty = dofile_once("%PATH%lib/pretty.lua")
 local css = dofile_once("%PATH%css.lua")
+local utils = dofile_once("%PATH%utils.lua")
 local nxml = dofile_once("%PATH%lib/nxml.lua")
 local select = parser.parse_style_selector
 
@@ -371,7 +354,6 @@ function test_Layout()
 end
 
 function test_observable()
-  local utils = dofile_once("%PATH%utils.lua")
   local data = {
     players = {
       { name = "Hello", ping = 10 },
@@ -415,7 +397,6 @@ function test_observable()
 end
 
 function test_get_data_from_binding_chain()
-  local utils = dofile_once("%PATH%utils.lua")
   lu.assertEquals(utils.get_data_from_binding_chain({ one = 1 }, { "one" }), 1)
   lu.assertEquals(utils.get_data_from_binding_chain({ one = { two = 2 } }, { "one", "two" }), 2)
   lu.assertEquals(utils.get_data_from_binding_chain({ one = { two = { three = 3 } } }, { "one", "two", "three" }), 3)
@@ -425,7 +406,6 @@ function test_get_data_from_binding_chain()
 end
 
 function test_set_data_on_binding_chain()
-  local utils = dofile_once("%PATH%utils.lua")
   local data = {
     one = 0
   }
@@ -451,6 +431,15 @@ function test_set_data_on_binding_chain()
   data = { one = { 1 } }
   utils.set_data_on_binding_chain(data, { "one", 1 }, 1)
   lu.assertEquals(data.one[1], 1)
+end
+
+function test_inflate_text()
+  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello :)"), {}), "Hello :)")
+  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ name }} whatever"), { name = "Peter"}), "Hello Peter whatever")
+  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ one.two.three }} boop"), { one = { two = { three = 3 }}}), "Hello 3 boop")
+  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ 1 }} shoop"), { "boop" }), "Hello boop shoop")
+  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ 1.1 }} gloop"), { { "boop" } }), "Hello boop gloop")
+  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ 1.meow.1 }} moop"), { { meow = { "boop" } } }), "Hello boop moop")
 end
 
 lu.LuaUnit.run()

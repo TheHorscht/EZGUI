@@ -160,6 +160,19 @@ local function set_data_on_binding_chain(data_context, binding_target_chain, val
   previous_context[last_target] = value
 end
 
+-- Converts a string like "Hello {{ name }}" into "Hello Peter"
+local function inflate_text(tokens, data_context)
+  local str = ""
+  for i, v in ipairs(tokens) do
+    if v.type == "text" then
+      str = str .. v.value
+    elseif v.type == "binding" then
+      str = str .. tostring(get_data_from_binding_chain(data_context, v.target_chain))
+    end
+  end
+  return str
+end
+
 return {
   split_lines = split_lines,
   throw_error = throw_error,
@@ -167,5 +180,6 @@ return {
   get_data_from_binding_chain = get_data_from_binding_chain,
   get_value_from_chain_or_not = get_value_from_chain_or_not,
   set_data_on_binding_chain = set_data_on_binding_chain,
+  inflate_text = inflate_text,
   make_observable = make_observable,
 }

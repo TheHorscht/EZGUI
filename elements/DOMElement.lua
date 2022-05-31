@@ -5,26 +5,6 @@ local pretty = dofile_once("%PATH%lib/pretty.lua")
 local utils = dofile_once("%PATH%utils.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
 
--- Converts a string like "Hello {{ name }}" into "Hello Peter"
-function inflate(tokens, data_context)
-  local str = ""
-  for i, v in ipairs(tokens) do
-    if v.type == "text" then
-      str = str .. v.value
-    elseif v.type == "binding" then
-      local context = data_context
-      for i=1, #v.target_chain do
-        context = context[v.target_chain[i]]
-        if context == nil then
-          error("Unknown identifier: '" .. tostring(v.target_chain[i]) .."'", 2)
-        end
-      end
-      str = str .. tostring(context)
-    end
-  end
-  return str
-end
-
 -- Calls the provided function once for each loop iteration, or just once if the element has no loop
 -- passing along a data context with loop variables inserted
 function loop_call(dom_element, data_context, func, ...)

@@ -1,6 +1,7 @@
 dofile_once("data/scripts/lib/utilities.lua")
 dofile_once("%PATH%oop.lua")
 dofile_once("%PATH%parsing_functions.lua")
+local utils = dofile_once("%PATH%utils.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
 local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
 
@@ -21,14 +22,14 @@ Button.default_style = {
 function Button:GetContentDimensions(gui, data_context)
   if not gui then error("Required parameter #1: GuiObject", 2) end
   if not data_context then error("Required parameter #2: data_context:table", 2) end
-  local text = inflate(self.value, data_context)
+  local text = utils.inflate_text(self.value, data_context)
   local text_width, text_height = GuiGetTextDimensions(gui, text)
   return text_width, text_height
 end
 
 function Button:Render(gui, new_id, x, y, data_context, layout)
   local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local text = inflate(self.value, data_context)
+  local text = utils.inflate_text(self.value, data_context)
 
   -- Draw an invisible image while the button is hovered which prevents mouse clicks from firing wands etc
   if self.hovered then
