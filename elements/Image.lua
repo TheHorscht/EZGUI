@@ -28,7 +28,10 @@ function Image:Render(gui, new_id, x, y, data_context, layout)
   GuiImage(gui, new_id(), info.x + info.offset_x + self.style.padding_left + info.border_size, info.y + info.offset_y + self.style.padding_top + info.border_size, self.attr.src, 1, self.attr.scaleX, self.attr.scaleY)
 
   if info.clicked and self.onClick then
-    self.onClick.execute(data_context, self)
+    self.onClick.execute(data_context, {
+      self = data_context,
+      element = self
+    })
   end
   -- Draw an invisible image while the button is hovered which prevents mouse clicks from firing wands etc
   if self.hovered then

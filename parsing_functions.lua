@@ -383,7 +383,7 @@ function parse_function_call_expression(input, error_callback)
     type = "function",
     name = function_name,
     args = args,
-    execute = function(data_context, element)
+    execute = function(data_context, environment_variables)
       if not data_context[function_name] then
         error("Function not found in data context: " .. function_name, 3)
       end
@@ -398,10 +398,7 @@ function parse_function_call_expression(input, error_callback)
         end
         table.insert(_args, arg.value)
       end
-      return setfenv(data_context[function_name], setmetatable({
-        self = data_context,
-        element = element
-      }, {
+      return setfenv(data_context[function_name], setmetatable(environment_variables, {
         __index = _G,
         __newindex = _G
       }))(unpack(_args))

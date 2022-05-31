@@ -40,7 +40,10 @@ function Button:Render(gui, new_id, x, y, data_context, layout)
   end
 
   if info.clicked then
-    self.onClick.execute(data_context, self)
+    self.onClick.execute(data_context, {
+      self = data_context,
+      element = self
+    })
   end
 
   if self.hovered then
