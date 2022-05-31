@@ -44,7 +44,6 @@ return {
     local utils = dofile_once(self_path .. "utils.lua")
     local css = dofile_once(self_path .. "css.lua")
     local parser = dofile_once(self_path .. "parsing_functions.lua")
-    local utils = dofile_once(self_path .. "utils.lua")
 
     local DOM_Elements = {
       Layout = Layout,
