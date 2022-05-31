@@ -51,18 +51,6 @@ local function throw_error(str, msg, pos, error_level)
   msg = msg .. ": "
   error("\n" .. pos_string .. msg .. line .. "\n" .. (" "):rep(#pos_string + #msg + pos-1) .. "^", error_level + 1)
 end
-local function get_data_from_binding_chain(data_context, binding_target_chain)
-  local pos = 1
-  for i, current_target in ipairs(binding_target_chain) do
-    data_context = data_context[current_target]
-    if not data_context then
-      local str = table.concat(binding_target_chain, ".")
-      throw_error(str, "Unknown identifier '" .. current_target .. "'", pos)
-    end
-    pos = pos + #current_target + 1
-  end
-  return data_context
-end
 
 local function shallow_copy(t)
   local t2 = {}
@@ -133,10 +121,51 @@ local function make_observable(t, key, prev_keys, callback)
   })
 end
 
+local function get_data_from_binding_chain(data_context, binding_target_chain)
+  for i, current_target in ipairs(binding_target_chain) do
+    if tonumber(current_target) then
+      current_target = tonumber(current_target)
+    end
+    data_context = data_context[current_target]
+    if data_context == nil then
+      error("Bound data variable not found: '" .. tostring(current_target) .."'", 2)
+    end
+  end
+  return data_context
+end
+
+-- Get the value from a table like: { type = "value", value = 5 } or { type = "binding", target_chain = ["one"] }
+local function get_value_from_chain_or_not(data_context, value)
+  if value.type == "binding" then
+    return get_data_from_binding_chain(data_context, value.target_chain)
+  else
+    return value.value
+  end
+end
+
+local function set_data_on_binding_chain(data_context, binding_target_chain, value)
+  local previous_context = data_context
+  local last_target
+  for i, current_target in ipairs(binding_target_chain) do
+    if tonumber(current_target) then
+      current_target = tonumber(current_target)
+    end
+    previous_context = data_context
+    data_context = data_context[current_target]
+    if data_context == nil then
+      error("Bound data variable not found: '" .. tostring(current_target) .."'", 2)
+    end
+    last_target = current_target
+  end
+  previous_context[last_target] = value
+end
+
 return {
   split_lines = split_lines,
   throw_error = throw_error,
   get_line_by_pos = get_line_by_pos,
   get_data_from_binding_chain = get_data_from_binding_chain,
-  make_observable = make_observable
+  get_value_from_chain_or_not = get_value_from_chain_or_not,
+  set_data_on_binding_chain = set_data_on_binding_chain,
+  make_observable = make_observable,
 }

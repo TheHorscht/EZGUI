@@ -414,4 +414,43 @@ function test_observable()
   lu.assertItemsEquals(changed, { "players.2.ping", "players.1.name", "boop", "boop.stoopy", "stoop.glob.2" })
 end
 
+function test_get_data_from_binding_chain()
+  local utils = dofile_once("%PATH%utils.lua")
+  lu.assertEquals(utils.get_data_from_binding_chain({ one = 1 }, { "one" }), 1)
+  lu.assertEquals(utils.get_data_from_binding_chain({ one = { two = 2 } }, { "one", "two" }), 2)
+  lu.assertEquals(utils.get_data_from_binding_chain({ one = { two = { three = 3 } } }, { "one", "two", "three" }), 3)
+  lu.assertEquals(utils.get_data_from_binding_chain({ 1 }, { 1 }), 1)
+  lu.assertEquals(utils.get_data_from_binding_chain({ { 2 } }, { 1, 1 }), 2)
+  lu.assertEquals(utils.get_data_from_binding_chain({ one = { 1 } }, { "one", 1 }), 1)
+end
+
+function test_set_data_on_binding_chain()
+  local utils = dofile_once("%PATH%utils.lua")
+  local data = {
+    one = 0
+  }
+  utils.set_data_on_binding_chain(data, { "one" }, 1)
+  lu.assertEquals(data.one, 1)
+
+  data.one = { two = 0 }
+  utils.set_data_on_binding_chain(data, { "one", "two" }, 2)
+  lu.assertEquals(data.one.two, 2)
+  
+  data.one = { two = { three = 3 } }
+  utils.set_data_on_binding_chain(data, { "one", "two", "three" }, 3)
+  lu.assertEquals(data.one.two.three, 3)
+
+  data = { 1 }
+  utils.set_data_on_binding_chain(data, { 1 }, 3)
+  lu.assertEquals(data[1], 3)
+
+  data = { { 2 } }
+  utils.set_data_on_binding_chain(data, { 1, 1 }, 2)
+  lu.assertEquals(data[1][1], 2)
+
+  data = { one = { 1 } }
+  utils.set_data_on_binding_chain(data, { "one", 1 }, 1)
+  lu.assertEquals(data.one[1], 1)
+end
+
 lu.LuaUnit.run()

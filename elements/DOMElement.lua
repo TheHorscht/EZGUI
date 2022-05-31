@@ -2,29 +2,8 @@ dofile_once("%PATH%oop.lua")
 local parser = dofile_once("%PATH%parsing_functions.lua")
 local css_props = dofile_once("%PATH%css_props.lua")
 local pretty = dofile_once("%PATH%lib/pretty.lua")
+local utils = dofile_once("%PATH%utils.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
-
-function get_data_from_binding_chain(data_context, binding_target_chain)
-  for i, current_target in ipairs(binding_target_chain) do
-     -- TODO: With table access, check if it's actually a table
-     -- e.g.: one.two.three
-     -- when 'one' is a number, trying to access a number value
-    data_context = data_context[current_target]
-    if data_context == nil then
-      error("Bound data variable not found: '" .. tostring(current_target) .."'", 2)
-    end
-  end
-  return data_context
-end
-
--- Get the value from a table like: { type = "value", value = 5 } or { type = "binding", target_chain = ["one"] }
-function get_value_from_chain_or_not(data_context, value)
-  if value.type == "binding" then
-    return get_data_from_binding_chain(data_context, value.target_chain)
-  else
-    return value.value
-  end
-end
 
 -- Converts a string like "Hello {{ name }}" into "Hello Peter"
 function inflate(tokens, data_context)
@@ -120,7 +99,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
         error(("Unknown property: '%s'"):format(tostring(key)), 2)
       end
       if style[key] then
-        return get_value_from_chain_or_not(data_context, style[key])
+        return utils.get_value_from_chain_or_not(data_context, style[key])
       else
         -- Style was not set, check if it's to be inherited
         if css_props[key].inherit then
@@ -159,7 +138,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
       if not attr[key] then
         return
       end
-      return get_value_from_chain_or_not(data_context, attr[key])
+      return utils.get_value_from_chain_or_not(data_context, attr[key])
     end,
     __newindex = function(t, key, value)
       -- Let us set it once in the constructor but not afterwards
@@ -197,7 +176,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
             type = "binding",
             target_chain = parser.read_binding_target(attr),
           }
-          return get_value_from_chain_or_not(data_context, a)
+          return utils.get_value_from_chain_or_not(data_context, a)
         end
       end
     end

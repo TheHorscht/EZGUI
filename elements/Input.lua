@@ -28,16 +28,16 @@ end
 
 function Input:Render(gui, new_id, x, y, data_context, layout)
   local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local value = get_value_from_chain_or_not(data_context, self.binding_target)
+  local value = utils.get_value_from_chain_or_not(data_context, self.binding_target)
   GuiZSetForNextWidget(gui, info.z)
   local new_text = GuiTextInput(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left, info.y + info.offset_y + info.border_size + self.style.padding_top, value, info.width, self.attr.max_length, self.attr.allowed_characters)
   if new_text ~= value then
+    utils.set_data_on_binding_chain(data_context, self.binding_target.target_chain, new_text)
     -- TODO: Refactor this
     local context = data_context
     for i=1, #self.binding_target.target_chain-1 do
       context = context[self.binding_target.target_chain[i]]
     end
-    context[self.binding_target.target_chain[#self.binding_target.target_chain]] = new_text
   end
 end
 

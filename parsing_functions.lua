@@ -128,10 +128,17 @@ local function read_binding_target(input, error_callback)
   -- Read periods/points
   local target_chain = {}
   while true do
-    -- error("Needs refactoring")
-    local target = read_identifier(buffer, function(str, msg, pos, lvl)
-      error_callback(str, msg, pos, lvl)
-    end)
+    local target
+    if buffer:peek() and buffer:peek():match("%d") then
+      target = buffer:read_while(function(buffer)
+        return buffer:peek() and buffer:peek():match("%d")
+      end)
+    end
+    if not target then
+      target = read_identifier(buffer, function(str, msg, pos, lvl)
+        error_callback(str, msg, pos, lvl)
+      end)
+    end
     if target then
       table.insert(target_chain, target)
     end

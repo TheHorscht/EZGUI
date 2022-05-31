@@ -1,6 +1,7 @@
 dofile_once("%PATH%oop.lua")
 local parser = dofile_once("%PATH%parsing_functions.lua")
 local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
+local utils = dofile_once("%PATH%utils.lua")
 
 local Slider = new_class("Slider", function(self, xml_element, data_context)
   super(xml_element, data_context)
@@ -34,19 +35,15 @@ end
 
 function Slider:Render(gui, new_id, x, y, data_context, layout)
   local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local value = get_value_from_chain_or_not(data_context, self.binding_target)
+  local value = utils.get_value_from_chain_or_not(data_context, self.binding_target)
   value = tonumber(value) or 0
   GuiZSetForNextWidget(gui, info.z)
   local slider_width, text_width = get_slider_and_text_width(self)
   local old_value = value
   local new_value = GuiSlider(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left - 2, info.y + info.offset_y + info.border_size + self.style.padding_top, "", value, self.attr.min, self.attr.max, self.attr.default, 1, " ", slider_width)
   if math.abs(new_value - old_value) > 0.001 then
-    -- TODO: Refactor this
-    local context = data_context
-    for i=1, #self.binding_target.target_chain-1 do
-      context = context[self.binding_target.target_chain[i]]
+    utils.set_data_on_binding_chain(data_context, self.binding_target.target_chain, new_value)
     end
-    context[self.binding_target.target_chain[#self.binding_target.target_chain]] = new_value
   end
   GuiZSetForNextWidget(gui, info.z)
   if self.style.color then
