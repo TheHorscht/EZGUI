@@ -126,21 +126,34 @@ return {
         GuiStartFrame(_gui)
       end
       if not observing[data] then
-        utils.make_observable(data)
+        for k, v in pairs(data.watch) do
+          setfenv(v, setmetatable({
+            self = data.data
+          }, {
+            __index = _G,
+            __newindex = _G
+          }))
+        end
+        utils.make_observable(data.data, nil, nil, function(path)
+          if data.watch[path] then
+            local v = utils.get_data_from_binding_chain(data.data, split_string(path, "."))
+            data.watch[path](v)
+          end
+        end)
         observing[data] = true
       end
       gui = gui or _gui
       if not dom_cache[content] then
         if type(content) == "string" then
-          dom_cache[content] = make_dom_from_xml_file(content, data)
+          dom_cache[content] = make_dom_from_xml_file(content, data.data)
         else
-          dom_cache[content] = make_dom_from_nxml_table(content.xml, content.xml_string, data)
+          dom_cache[content] = make_dom_from_nxml_table(content.xml, content.xml_string, data.data)
         end
       end
       local new_id = create_id_generator()
       local root_layout = dom_cache[content]
       GuiIdPushString(gui, "EZGUI_" .. tostring(content))
-      local width, height = root_layout:Render(gui, new_id, x, y, data)
+      local width, height = root_layout:Render(gui, new_id, x, y, data.data)
       GuiIdPop(gui)
       return width, height
     end
