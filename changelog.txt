@@ -2,6 +2,7 @@
 - When specifiying X, Y position when rendering the main layout, will now update correctly
   and also not use the margin system for it internally anymore.
 - Removed Button debug rendering for clickable area, since it's pretty much useless anyway, just set debug on the containing Layout
+- Add @change callback for Input and Text
 
 v0.2.0:
 - Images now support the @click attribute to basically create an ImageButton

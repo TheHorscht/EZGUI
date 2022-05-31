@@ -10,6 +10,9 @@ local Slider = new_class("Slider", function(self, xml_element, data_context)
   self:ReadAttribute(xml_element, "max", 100)
   self:ReadAttribute(xml_element, "default", 0)
   self:ReadAttribute(xml_element, "precision", 0, tonumber)
+  if xml_element.attr["@change"] then
+    self.onChange = parse_function_call_expression(xml_element.attr["@change"])
+  end
   self.min_width = 30
 end, DOMElement)
 
@@ -43,6 +46,12 @@ function Slider:Render(gui, new_id, x, y, data_context, layout)
   local new_value = GuiSlider(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left - 2, info.y + info.offset_y + info.border_size + self.style.padding_top, "", value, self.attr.min, self.attr.max, self.attr.default, 1, " ", slider_width)
   if math.abs(new_value - old_value) > 0.001 then
     utils.set_data_on_binding_chain(data_context, self.binding_target.target_chain, new_value)
+    if self.onChange then
+      self.onChange.execute(data_context, {
+        self = data_context,
+        element = self,
+        value = new_value
+      })
     end
   end
   GuiZSetForNextWidget(gui, info.z)

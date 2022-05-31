@@ -12,6 +12,9 @@ local Input = new_class("Input", function(self, xml_element, data_context)
   self.min_width = 30
   self:ReadAttribute(xml_element, "max_length", 30)
   self:ReadAttribute(xml_element, "allowed_characters", "")
+  if xml_element.attr["@change"] then
+    self.onChange = parse_function_call_expression(xml_element.attr["@change"])
+  end
 end, DOMElement)
 
 Input.default_style = {
@@ -33,10 +36,12 @@ function Input:Render(gui, new_id, x, y, data_context, layout)
   local new_text = GuiTextInput(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left, info.y + info.offset_y + info.border_size + self.style.padding_top, value, info.width, self.attr.max_length, self.attr.allowed_characters)
   if new_text ~= value then
     utils.set_data_on_binding_chain(data_context, self.binding_target.target_chain, new_text)
-    -- TODO: Refactor this
-    local context = data_context
-    for i=1, #self.binding_target.target_chain-1 do
-      context = context[self.binding_target.target_chain[i]]
+    if self.onChange then
+      self.onChange.execute(data_context, {
+        self = data_context,
+        element = self,
+        value = new_text
+      })
     end
   end
 end
