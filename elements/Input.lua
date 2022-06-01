@@ -3,8 +3,8 @@ local parser = dofile_once("%PATH%parsing_functions.lua")
 local utils = dofile_once("%PATH%utils.lua")
 local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
 
-local Input = new_class("Input", function(self, xml_element, data_context)
-  super(xml_element, data_context)
+local Input = new_class("Input", function(self, xml_element, ezgui_object)
+  super(xml_element, ezgui_object)
   if not xml_element.attr.bind then
     error("'bind' attribute is required on Input field", 4)
   end
@@ -21,24 +21,24 @@ Input.default_style = {
   width = 100,
 }
 
-function Input:GetContentDimensions(gui, data_context)
+function Input:GetContentDimensions(gui, ezgui_object)
   if not gui then error("Required parameter #1: GuiObject", 2) end
-  if not data_context then error("Required parameter #2: data_context:table", 2) end
+  if not ezgui_object then error("Required parameter #2: ezgui_object:table", 2) end
   local border_size = self:GetBorderSize() 
   local inner_width, inner_height = math.max(self.min_width, self.style.width - border_size * 2), 11
   return inner_width, inner_height
 end
 
-function Input:Render(gui, new_id, x, y, data_context, layout)
-  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local value = utils.get_value_from_chain_or_not(data_context, self.binding_target)
+function Input:Render(gui, new_id, x, y, ezgui_object, layout)
+  local info = self:PreRender(gui, new_id, x, y, ezgui_object, layout)
+  local value = utils.get_value_from_chain_or_not(ezgui_object, self.binding_target)
   GuiZSetForNextWidget(gui, info.z)
   local new_text = GuiTextInput(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left, info.y + info.offset_y + info.border_size + self.style.padding_top, value, info.width, self.attr.max_length, self.attr.allowed_characters)
   if new_text ~= value then
-    utils.set_data_on_binding_chain(data_context, self.binding_target.target_chain, new_text)
+    utils.set_data_on_binding_chain(ezgui_object, self.binding_target.target_chain, new_text)
     if self.onChange then
-      self.onChange.execute(data_context, {
-        self = data_context,
+      self.onChange.execute(ezgui_object, {
+        self = ezgui_object.data,
         element = self,
         value = new_text
       })

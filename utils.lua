@@ -121,7 +121,11 @@ local function make_observable(t, key, prev_keys, callback)
   })
 end
 
-local function get_data_from_binding_chain(data_context, binding_target_chain)
+local function get_data_from_binding_chain(ezgui_object, binding_target_chain)
+  if ezgui_object.computed and #binding_target_chain == 1 and ezgui_object.computed[binding_target_chain[1]] then
+    return ezgui_object.computed[binding_target_chain[1]]()
+  end
+  local data_context = ezgui_object.data
   for i, current_target in ipairs(binding_target_chain) do
     if tonumber(current_target) then
       current_target = tonumber(current_target)
@@ -135,16 +139,17 @@ local function get_data_from_binding_chain(data_context, binding_target_chain)
 end
 
 -- Get the value from a table like: { type = "value", value = 5 } or { type = "binding", target_chain = ["one"] }
-local function get_value_from_chain_or_not(data_context, value)
+local function get_value_from_chain_or_not(ezgui_object, value)
   if value.type == "binding" then
-    return get_data_from_binding_chain(data_context, value.target_chain)
+    return get_data_from_binding_chain(ezgui_object, value.target_chain)
   else
     return value.value
   end
 end
 
-local function set_data_on_binding_chain(data_context, binding_target_chain, value)
-  local previous_context = data_context
+local function set_data_on_binding_chain(ezgui_object, binding_target_chain, value)
+  local previous_context = ezgui_object.data
+  local data_context = ezgui_object.data
   local last_target
   for i, current_target in ipairs(binding_target_chain) do
     if tonumber(current_target) then
@@ -161,13 +166,13 @@ local function set_data_on_binding_chain(data_context, binding_target_chain, val
 end
 
 -- Converts a string like "Hello {{ name }}" into "Hello Peter"
-local function inflate_text(tokens, data_context)
+local function inflate_text(tokens, ezgui_object)
   local str = ""
   for i, v in ipairs(tokens) do
     if v.type == "text" then
       str = str .. v.value
     elseif v.type == "binding" then
-      str = str .. tostring(get_data_from_binding_chain(data_context, v.target_chain))
+      str = str .. tostring(get_data_from_binding_chain(ezgui_object, v.target_chain))
     end
   end
   return str

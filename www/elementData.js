@@ -21,8 +21,10 @@ module.exports = {
         ],
         codeBlocks: [
           `
-local data_context = {
-  fruit_basket = { "Apple", "Banana", "Tomato" }
+local ezgui_object = {
+  data = {
+    fruit_basket = { "Apple", "Banana", "Tomato" }
+  }
 }
 `,`
 <Text forEach="fruit in fruit_basket">{{ fruit }}</Text>

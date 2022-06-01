@@ -8,16 +8,16 @@ local function trim(s)
    return s:match("^()%s*$") and '' or s:match("^%s*(.*%S)")
 end
 
-local Text = new_class("Text", function(self, xml_element, data_context)
-  super(xml_element, data_context)
+local Text = new_class("Text", function(self, xml_element, ezgui_object)
+  super(xml_element, ezgui_object)
   local text = trim(xml_element:text())
   self.value = parsers.parse_text(trim(xml_element:text()))
 end, DOMElement)
 
-function Text:GetContentDimensions(gui, data_context)
+function Text:GetContentDimensions(gui, ezgui_object)
   if not gui then error("Required parameter #1: GuiObject", 2) end
-  if not data_context then error("Required parameter #2: data_context:table", 2) end
-  local text = utils.inflate_text(self.value, data_context)
+  if not ezgui_object then error("Required parameter #2: ezgui_object:table", 2) end
+  local text = utils.inflate_text(self.value, ezgui_object)
   -- split text into lines
   local lines = utils.split_lines(text)
   local content_width, content_height = 0, 0
@@ -30,9 +30,9 @@ function Text:GetContentDimensions(gui, data_context)
   return content_width, content_height
 end
 
-function Text:Render(gui, new_id, x, y, data_context, layout)
-  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local text = utils.inflate_text(self.value, data_context)
+function Text:Render(gui, new_id, x, y, ezgui_object, layout)
+  local info = self:PreRender(gui, new_id, x, y, ezgui_object, layout)
+  local text = utils.inflate_text(self.value, ezgui_object)
   local lines = utils.split_lines(text)
   local line_height = (info.height - self.style.padding_top - self.style.padding_bottom) / #lines
   for i, line in ipairs(lines) do

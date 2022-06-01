@@ -23,21 +23,23 @@ Then in your init.lua you can render this GUI:
 -- Dofiling EZGUI.lua returns a table with an init function that you need to call and pass in the path to the library, which in turn will return a render function you can call to render a GUI
 local render_gui = dofile_once("mods/your_mod_id/lib/EZGUI/EZGUI.lua").init("mods/your_mod_id/lib/EZGUI")
 -- This is the data context table, here lives your data that you can bind to
-local data = {
-  collection = { "Bloo", "Blaa", "Blee" },
-  button_margin = 5,
-  -- Methods defined here can be used in @click, two variables will be available within these functions:
-  -- 'self', refering to the data_context and
-  -- 'element', the element that was clicked on
-  add_button_margin = function(amount)
-    print(element.name .. " was clicked!")
-    self.button_margin = self.button_margin + amount
-  end,
+local ezgui_object = {
+  data = {
+    collection = { "Bloo", "Blaa", "Blee" },
+    button_margin = 5,
+    -- Methods defined here can be used in @click, two variables will be available within these functions:
+    -- 'self', refering to the data table and
+    -- 'element', the element that was clicked on
+    add_button_margin = function(amount)
+      print(element.name .. " was clicked!")
+      self.button_margin = self.button_margin + amount
+    end,
+  }
 }
 
 function OnWorldPreUpdate()
-  -- render_gui(x, y, path_to_xml, data_context)
-  render_gui(10, 50, "mods/EZGUI_example/gui.xml", data)
+  -- render_gui(x, y, path_to_xml, ezgui_object)
+  render_gui(10, 50, "mods/EZGUI_example/gui.xml", ezgui_object)
 end
 ```
 Currently only works in `init.lua`, since it needs access to `ModTextFileGetContent` to read the XML file.

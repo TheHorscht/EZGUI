@@ -4,8 +4,8 @@ dofile_once("%PATH%parsing_functions.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
 local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
 
-local Layout = new_class("Layout", function(self, xml_element, data_context)
-  super(xml_element, data_context)
+local Layout = new_class("Layout", function(self, xml_element, ezgui_object)
+  super(xml_element, ezgui_object)
   -- Scrolling is unsupported due to the Noita GUI API not supporting nested ScrollContainers,
   -- which means they're unusable in the mod settings menu, since the mod settings menu in itself already renders its
   -- content in a ScrollContainer
@@ -14,7 +14,7 @@ local Layout = new_class("Layout", function(self, xml_element, data_context)
   self.z_stack = 10
 end, DOMElement)
 
-function Layout:GetPositionForWidget(gui, data_context, element, width, height)
+function Layout:GetPositionForWidget(gui, ezgui_object, element, width, height)
   local border_size = element:GetBorderSize()
   local x = self.next_element_x + self.style.padding_left
   local y = self.next_element_y + self.style.padding_top
@@ -46,19 +46,19 @@ function Layout:GetPositionForWidget(gui, data_context, element, width, height)
     y = y + something
     x = x + element.style.margin_left + self._content_width * horizontal_scalar - (self._content_width * horizontal_scalar)
   end
-  local offset_x, offset_y = element:GetRenderOffset(gui, data_context)
+  local offset_x, offset_y = element:GetRenderOffset(gui, ezgui_object)
   return x, y, offset_x, offset_y
 end
 
-function Layout:GetContentDimensions(gui, data_context)
+function Layout:GetContentDimensions(gui, ezgui_object)
   if not gui then error("Required parameter #1: GuiObject", 2) end
-  if not data_context then error("Required parameter #2: data_context:table", 2) end
+  if not ezgui_object then error("Required parameter #2: ezgui_object:table", 2) end
   local content_width = 0
   local content_height = 0
   for i, child in ipairs(self.children) do
     if not child.render_if or child.render_if() then
-      loop_call(child, data_context, function(child, data_context)
-        local child_content_width, child_content_height, child_outer_width, child_outer_height = child:GetDimensions(gui, data_context)
+      loop_call(child, ezgui_object, function(child, ezgui_object)
+        local child_content_width, child_content_height, child_outer_width, child_outer_height = child:GetDimensions(gui, ezgui_object)
         local child_total_width = child_outer_width + child.style.margin_left + child.style.margin_right
         local child_total_height = child_outer_height + child.style.margin_top + child.style.margin_bottom
         child_total_width = math.max(child_total_width, child.style.width or 0)
@@ -77,8 +77,8 @@ function Layout:GetContentDimensions(gui, data_context)
   return content_width, content_height
 end
 
-function Layout:Render(gui, new_id, x, y, data_context, layout)
-  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
+function Layout:Render(gui, new_id, x, y, ezgui_object, layout)
+  local info = self:PreRender(gui, new_id, x, y, ezgui_object, layout)
   -- Cache it so we don't have to calculate it again every time for GetPositionForWidget
   self._content_width = info.width
   self._content_height = info.height
@@ -131,13 +131,13 @@ function Layout:Render(gui, new_id, x, y, data_context, layout)
   self.next_element_y = info.y + info.offset_y + info.border_size
   for i, child in ipairs(self.children) do
     if not child.render_if or child.render_if() then
-      loop_call(child, data_context, function(child, data_context)
-        local child_inner_width, child_inner_height, child_outer_width, child_outer_height = child:GetDimensions(gui, data_context)
+      loop_call(child, ezgui_object, function(child, ezgui_object)
+        local child_inner_width, child_inner_height, child_outer_width, child_outer_height = child:GetDimensions(gui, ezgui_object)
         local child_total_width = child_outer_width + child.style.margin_left + child.style.margin_right
         local child_total_height = child_outer_height + child.style.margin_top + child.style.margin_bottom
         local child_border_size = child:GetBorderSize()
         if self.attr.debug then
-          local x, y, offset_x, offset_y = self:GetPositionForWidget(gui, data_context, child, child_outer_width, child_outer_height)
+          local x, y, offset_x, offset_y = self:GetPositionForWidget(gui, ezgui_object, child, child_outer_width, child_outer_height)
           local inner_width = child_outer_width - child.style.padding_left - child.style.padding_right
           local inner_height = child_outer_height - child.style.padding_top - child.style.padding_bottom
           render_debug_margin(x, y, child.style, child_border_size, inner_width - child_border_size * 2, inner_height - child_border_size * 2, child_outer_width, child_outer_height)
@@ -150,7 +150,7 @@ function Layout:Render(gui, new_id, x, y, data_context, layout)
           render_debug_rect(x + offset_x + child.style.padding_left, y + offset_y + child.style.padding_top, child_inner_width, child_inner_height, "green")
         end
         if not child.show_if or child.show_if() then
-          child:Render(gui, new_id, nil, nil, data_context, self)
+          child:Render(gui, new_id, nil, nil, ezgui_object, self)
         end
         if self.style.direction == "horizontal" then
           self.next_element_x = self.next_element_x + math.max((child.style.width or 0), child_total_width)

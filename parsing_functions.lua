@@ -383,22 +383,22 @@ function parse_function_call_expression(input, error_callback)
     type = "function",
     name = function_name,
     args = args,
-    execute = function(data_context, environment_variables)
-      if not data_context[function_name] then
+    execute = function(ezgui_object, environment_variables)
+      if not ezgui_object.data[function_name] then
         error("Function not found in data context: " .. function_name, 3)
       end
       local _args = {}
       -- Collect and package arguments
       for i, arg in ipairs(args) do
         if arg.type == "variable" then
-          if not data_context[arg.value] then
+          if not ezgui_object.data[arg.value] then
             error("Variable not found in data context: " .. arg.value, 3)
           end
-          arg.value = data_context[arg.value]
+          arg.value = ezgui_object.data[arg.value]
         end
         table.insert(_args, arg.value)
       end
-      return setfenv(data_context[function_name], setmetatable(environment_variables, {
+      return setfenv(ezgui_object.data[function_name], setmetatable(environment_variables, {
         __index = _G,
         __newindex = _G
       }))(unpack(_args))

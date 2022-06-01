@@ -5,8 +5,8 @@ local utils = dofile_once("%PATH%utils.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
 local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
 
-local Button = new_class("Button", function(self, xml_element, data_context)
-  super(xml_element, data_context)
+local Button = new_class("Button", function(self, xml_element, ezgui_object)
+  super(xml_element, ezgui_object)
   self.value = parse_text(xml_element:text())
   self.onClick = parse_function_call_expression(xml_element.attr["@click"])
 end, DOMElement)
@@ -19,17 +19,17 @@ Button.default_style = {
   border = true,
 }
 
-function Button:GetContentDimensions(gui, data_context)
+function Button:GetContentDimensions(gui, ezgui_object)
   if not gui then error("Required parameter #1: GuiObject", 2) end
-  if not data_context then error("Required parameter #2: data_context:table", 2) end
-  local text = utils.inflate_text(self.value, data_context)
+  if not ezgui_object then error("Required parameter #2: ezgui_object:table", 2) end
+  local text = utils.inflate_text(self.value, ezgui_object)
   local text_width, text_height = GuiGetTextDimensions(gui, text)
   return text_width, text_height
 end
 
-function Button:Render(gui, new_id, x, y, data_context, layout)
-  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local text = utils.inflate_text(self.value, data_context)
+function Button:Render(gui, new_id, x, y, ezgui_object, layout)
+  local info = self:PreRender(gui, new_id, x, y, ezgui_object, layout)
+  local text = utils.inflate_text(self.value, ezgui_object)
 
   -- Draw an invisible image while the button is hovered which prevents mouse clicks from firing wands etc
   if self.hovered then
@@ -41,8 +41,8 @@ function Button:Render(gui, new_id, x, y, data_context, layout)
   end
 
   if info.clicked then
-    self.onClick.execute(data_context, {
-      self = data_context,
+    self.onClick.execute(ezgui_object, {
+      self = ezgui_object.data,
       element = self
     })
   end

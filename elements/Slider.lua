@@ -3,8 +3,8 @@ local parser = dofile_once("%PATH%parsing_functions.lua")
 local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
 local utils = dofile_once("%PATH%utils.lua")
 
-local Slider = new_class("Slider", function(self, xml_element, data_context)
-  super(xml_element, data_context)
+local Slider = new_class("Slider", function(self, xml_element, ezgui_object)
+  super(xml_element, ezgui_object)
   self.binding_target = { type = "binding", target_chain = parser.read_binding_target(xml_element.attr.bind) }
   self:ReadAttribute(xml_element, "min", 0)
   self:ReadAttribute(xml_element, "max", 100)
@@ -31,24 +31,24 @@ local function get_slider_and_text_width(self)
   return math.max(self.min_width, slider_width), text_width
 end
 
-function Slider:GetContentDimensions(gui, data_context)
+function Slider:GetContentDimensions(gui, ezgui_object)
   local slider_width, text_width = get_slider_and_text_width(self)
   return slider_width + text_width, 8
 end
 
-function Slider:Render(gui, new_id, x, y, data_context, layout)
-  local info = self:PreRender(gui, new_id, x, y, data_context, layout)
-  local value = utils.get_value_from_chain_or_not(data_context, self.binding_target)
+function Slider:Render(gui, new_id, x, y, ezgui_object, layout)
+  local info = self:PreRender(gui, new_id, x, y, ezgui_object, layout)
+  local value = utils.get_value_from_chain_or_not(ezgui_object, self.binding_target)
   value = tonumber(value) or 0
   GuiZSetForNextWidget(gui, info.z)
   local slider_width, text_width = get_slider_and_text_width(self)
   local old_value = value
   local new_value = GuiSlider(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left - 2, info.y + info.offset_y + info.border_size + self.style.padding_top, "", value, self.attr.min, self.attr.max, self.attr.default, 1, " ", slider_width)
   if math.abs(new_value - old_value) > 0.001 then
-    utils.set_data_on_binding_chain(data_context, self.binding_target.target_chain, new_value)
+    utils.set_data_on_binding_chain(ezgui_object, self.binding_target.target_chain, new_value)
     if self.onChange then
-      self.onChange.execute(data_context, {
-        self = data_context,
+      self.onChange.execute(ezgui_object, {
+        self = ezgui_object.data,
         element = self,
         value = new_value
       })

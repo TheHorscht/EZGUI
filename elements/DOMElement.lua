@@ -7,10 +7,10 @@ local string_buffer = dofile_once("%PATH%string_buffer.lua")
 
 -- Calls the provided function once for each loop iteration, or just once if the element has no loop
 -- passing along a data context with loop variables inserted
-function loop_call(dom_element, data_context, func, ...)
+function loop_call(dom_element, ezgui_object, func, ...)
   if dom_element.loop then
-    for i, v in data_context[dom_element.loop.binding_target].__ipairs do
-      local new_context = setmetatable({}, { __index = data_context })
+    for i, v in ezgui_object.data[dom_element.loop.binding_target].__ipairs do
+      local new_context = setmetatable({}, { __index = ezgui_object })
       if dom_element.loop.iter_variable then
         new_context[dom_element.loop.iter_variable] = i
       end
@@ -20,7 +20,7 @@ function loop_call(dom_element, data_context, func, ...)
       func(dom_element, new_context, ...)
     end
   else
-    func(dom_element, data_context, ...)
+    func(dom_element, ezgui_object, ...)
   end
 end
 
@@ -60,10 +60,10 @@ function create_enum_validator(valid_values)
   end
 end
 
-local DOMElement = new_class("DOMElement", function(self, xml_element, data_context)
+local DOMElement = new_class("DOMElement", function(self, xml_element, ezgui_object)
   self.name = xml_element.name
   self.class = xml_element.attr.class or ""
-  self.data_context = data_context
+  self.ezgui_object = ezgui_object
   local style = {}
   local style_raw = {}
   self.style = setmetatable({
@@ -79,7 +79,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
         error(("Unknown property: '%s'"):format(tostring(key)), 2)
       end
       if style[key] then
-        return utils.get_value_from_chain_or_not(data_context, style[key])
+        return utils.get_value_from_chain_or_not(ezgui_object, style[key])
       else
         -- Style was not set, check if it's to be inherited
         if css_props[key].inherit then
@@ -118,7 +118,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
       if not attr[key] then
         return
       end
-      return utils.get_value_from_chain_or_not(data_context, attr[key])
+      return utils.get_value_from_chain_or_not(ezgui_object, attr[key])
     end,
     __newindex = function(t, key, value)
       -- Let us set it once in the constructor but not afterwards
@@ -148,7 +148,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
       if attr:match("%(") then
         local func = parse_function_call_expression(attr)
         self[prop] = function()
-          return func.execute(data_context, self)
+          return func.execute(ezgui_object, self)
         end
       else
         self[prop] = function()
@@ -156,7 +156,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, data_cont
             type = "binding",
             target_chain = parser.read_binding_target(attr),
           }
-          return utils.get_value_from_chain_or_not(data_context, a)
+          return utils.get_value_from_chain_or_not(ezgui_object, a)
         end
       end
     end
@@ -198,10 +198,10 @@ function DOMElement:QuerySelector(selector_string)
   return find_matching_self_or_child(self)
 end
 
-function DOMElement:GetDimensions(gui, data_context)
+function DOMElement:GetDimensions(gui, ezgui_object)
   if not gui then error("Required parameter #1: GuiObject", 2) end
-  if not data_context then error("Required parameter #2: data_context:table", 2) end
-  local content_width, content_height = self:GetContentDimensions(gui, data_context)
+  if not ezgui_object then error("Required parameter #2: ezgui_object:table", 2) end
+  local content_width, content_height = self:GetContentDimensions(gui, ezgui_object)
   local border_size = self:GetBorderSize()
   local outer_width = content_width + self.style.padding_left + self.style.padding_right + border_size * 2
   local outer_height = content_height + self.style.padding_top + self.style.padding_bottom + border_size * 2
@@ -213,8 +213,8 @@ function DOMElement:GetBorderSize()
   return self.style.border and self.style.border_size or 0
 end
 
-function DOMElement:GetRenderOffset(gui, data_context)
-  local content_width, content_height = self:GetContentDimensions(gui, data_context)
+function DOMElement:GetRenderOffset(gui, ezgui_object)
+  local content_width, content_height = self:GetContentDimensions(gui, ezgui_object)
   local border_size = self:GetBorderSize()
   content_width = content_width + self.style.padding_left + self.style.padding_right + border_size * 2
   content_height = content_height + self.style.padding_top + self.style.padding_bottom + border_size * 2
@@ -225,12 +225,12 @@ function DOMElement:GetRenderOffset(gui, data_context)
   return x_translate_scale * space_to_move_x, y_translate_scale * space_to_move_y
 end
 
-function DOMElement:PreRender(gui, new_id, x, y, data_context, layout)
-  local width, height, outer_width, outer_height = self:GetDimensions(gui, data_context)
+function DOMElement:PreRender(gui, new_id, x, y, ezgui_object, layout)
+  local width, height, outer_width, outer_height = self:GetDimensions(gui, ezgui_object)
   local border_size = self:GetBorderSize()
-  local offset_x, offset_y = self:GetRenderOffset(gui, data_context)
+  local offset_x, offset_y = self:GetRenderOffset(gui, ezgui_object)
   if layout then
-    x, y = layout:GetPositionForWidget(gui, data_context, self, outer_width, outer_height)
+    x, y = layout:GetPositionForWidget(gui, ezgui_object, self, outer_width, outer_height)
   end
   local z = self:GetZ()
   -- Draw an invisible nine piece which catches mouse clicks, this is to have exact control over the clickable area, which should include padding
@@ -292,7 +292,7 @@ function DOMElement:ReadAttribute(xml_element, name, value_default, converter, v
   local value
   local used_default = false
   if xml_element.attr[":" .. name] ~= nil then
-    value = self.data_context[xml_element.attr[":" .. name]]
+    value = self.ezgui_object.data[xml_element.attr[":" .. name]] -- TODO: What does this do again?
     out = {
       type = "binding",
       target_chain = parser.read_binding_target(xml_element.attr[":" .. name])
