@@ -1,5 +1,3 @@
--- EZGUI v0.2.0
-
 local _ModTextFileGetContent = ModTextFileGetContent
 
 local function verify_ezgui_object(ezgui_object)

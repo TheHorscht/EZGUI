@@ -3,6 +3,7 @@ const AdmZip = require('adm-zip');
 const path = require('path');
 const minimatch = require("minimatch");
 const pjson = require('./package.json');
+const exec = require('child_process').exec;
 
 let preview = false;
 
@@ -12,6 +13,18 @@ args.forEach(val => {
     preview = true;
   }
 });
+
+function execute(command, callback){
+  exec(command, function(error, stdout, stderr){ callback(stdout); });
+};
+
+async function getGitTag() {
+  return new Promise((resolve, reject) => {
+    exec("git describe --tags", (error, stdout, stderr) => {
+      resolve(stdout.replace(/[\r\n]*$/, ''));
+    });
+  });
+}
 
 // Config
 const out_dir = __dirname + '/dist';
@@ -46,9 +59,16 @@ function is_dir(path) {
   }
 }
 
+const replacingFuncs = {
+  ["changelog.txt"](content, version) {
+    return version + ':\n' + content
+  },
+  ["EZGUI.lua"](content, version) {
+    return `-- ${version}\n\n` + content
+  },
+};
 const zip = new AdmZip();
-
-const addFiles = item => {
+const addFiles = (item, gitTag) => {
   if(ignore_list.every(ignore_entry => !minimatch(item, ignore_entry))) {
     if(is_dir(__dirname + '/' + item)) {
       fs.readdirSync(__dirname + '/' + item).forEach(entry => {
@@ -60,18 +80,23 @@ const addFiles = item => {
       if(preview) {
         console.log(item);
       } else {
-        zip.addLocalFile(`${__dirname}/${item}`, `${name}/${folderName}`);
+        let content = fs.readFileSync(`${__dirname}/${item}`);
+        content = replacingFuncs[item]?.(content, gitTag) || content;
+        zip.addFile(`${name}/${item}`, content);
       }
     }
   }
 };
 
-fs.readdirSync(root_folder).forEach(entry => {
-  addFiles(entry);
-});
-if(!preview) {
-  if (!fs.existsSync(out_dir)) {
-    fs.mkdirSync(out_dir);
+(async () => {
+  const gitTag = await getGitTag();
+  fs.readdirSync(root_folder).forEach(entry => {
+    addFiles(entry, gitTag);
+  });
+  if(!preview) {
+    if (!fs.existsSync(out_dir)) {
+      fs.mkdirSync(out_dir);
+    }
+    zip.writeZip(`${out_dir}/${name}_${gitTag}.zip`);
   }
-  zip.writeZip(`${out_dir}/${name}_v${version}.zip`);
-}
+})()
