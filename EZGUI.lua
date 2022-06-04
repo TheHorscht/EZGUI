@@ -144,13 +144,21 @@ return {
         if error_msg then
           error(error_msg, 2)
         end
-        for k, v in pairs(ezgui_object.watch) do
-          setfenv(v, setmetatable({
-            self = ezgui_object.data
-          }, {
-            __index = _G,
-            __newindex = _G
-          }))
+        local env = setmetatable({
+          self = setmetatable({}, {
+            __index = function(t, k)
+              return utils.get_value_from_ezgui_object(ezgui_object, { k })
+            end
+          })
+        }, {
+          __index = _G,
+          __newindex = _G
+        })
+        for k, func in pairs(ezgui_object.watch) do
+          setfenv(func, env)
+        end
+        for k, func in pairs(ezgui_object.computed) do
+          setfenv(func, env)
         end
         utils.make_observable(ezgui_object.data, nil, nil, function(path)
           if ezgui_object.watch[path] then
