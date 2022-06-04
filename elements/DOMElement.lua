@@ -5,36 +5,6 @@ local pretty = dofile_once("%PATH%lib/pretty.lua")
 local utils = dofile_once("%PATH%utils.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
 
--- Calls the provided function once for each loop iteration, or just once if the element has no loop
--- passing along a data context with loop variables inserted
-function loop_call(dom_element, ezgui_object, func, ...)
-  if dom_element.loop then
-    for i, v in ezgui_object.data[dom_element.loop.binding_target].__ipairs do
-      local new_context = setmetatable({}, { __index = ezgui_object })
-      if dom_element.loop.iter_variable then
-        new_context[dom_element.loop.iter_variable] = i
-      end
-      if dom_element.loop.bind_variable then
-        new_context[dom_element.loop.bind_variable] = v
-      end
-      func(dom_element, new_context, ...)
-    end
-  else
-    func(dom_element, ezgui_object, ...)
-  end
-end
-
-function concat_table(t)
-  local s = ""
-  for i, v in ipairs(t) do
-    s = s .. ("'%s'"):format(v)
-    if next(t, i) then
-      s = s .. ", "
-    end
-  end
-  return s
-end
-
 ALIGN_ITEMS_HORIZONTAL = {
   LEFT = "left", CENTER = "center", RIGHT = "right"
 }

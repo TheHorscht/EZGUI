@@ -60,6 +60,22 @@ local function shallow_copy(t)
   return t2
 end
 
+local function _ipairs(t)
+  if t.__ipairs then
+    return t.__ipairs
+  else
+    return ipairs(t)
+  end
+end
+
+local function _pairs(t)
+  if t.__pairs then
+    return t.__pairs
+  else
+    return pairs(t)
+  end
+end
+
 -- Thanks to dextercd#7326 on Discord for helping me debug this and coming up with the final working version
 local function make_observable(t, key, prev_keys, callback)
   if type(t) ~= "table" or getmetatable(t) then
@@ -165,6 +181,76 @@ local function set_data_on_binding_chain(ezgui_object, binding_target_chain, val
   previous_context[last_target] = value
 end
 
+local function get_value_from_ezgui_object(ezgui_object, target)
+  if type(target) ~= "table" then
+    target = { target }
+  end
+  local computed = ezgui_object.computed[target[1]]
+  if computed then
+    return computed()
+  end
+  local current_data = ezgui_object.data
+  local target_chain = ""
+  for i, current_target in ipairs(target) do
+    target_chain = target_chain .. current_target
+    if tonumber(current_target) then
+      current_target = tonumber(current_target)
+    end
+    current_data = current_data[current_target]
+    if current_data == nil then
+      error("Data variable not found: '" .. tostring(target_chain) .."'", 2)
+    end
+    if next(target, i) then
+      target_chain = target_chain .. "."
+    end
+  end
+  return current_data
+end
+
+-- Calls the provided function once for each loop iteration, or just once if the element has no loop
+-- passing along a data context with loop variables inserted
+local function loop_call(dom_element, ezgui_object, func, ...)
+  if dom_element.loop then
+    if not ezgui_object.data[dom_element.loop.binding_target] then
+      error("Binding target not found: " .. dom_element.loop.binding_target)
+    end
+    for i, v in ezgui_object.data[dom_element.loop.binding_target].__ipairs do
+      -- local proxy_data = {}
+      -- if dom_element.loop.iter_variable then
+      --   proxy_data[dom_element.loop.iter_variable] = i
+      -- end
+      -- if dom_element.loop.bind_variable then
+      --   proxy_data[dom_element.loop.bind_variable] = v
+      -- end
+      -- local new_context = setmetatable({}, {
+      --   __index = function(t, k)
+      --     if k == "computed" then
+      --       return ezgui_object.computed
+      --     elseif k == "data" then
+      --       return setmetatable({}, {
+      --         __index = function(t, k)
+      --           return proxy_data[k] or ezgui_object.data[k]
+      --         end
+      --       })
+      --     end
+      --   end
+      -- })
+      local new_context = setmetatable({}, {
+        __index = ezgui_object
+      })
+      if dom_element.loop.iter_variable then
+        new_context.data[dom_element.loop.iter_variable] = i
+      end
+      if dom_element.loop.bind_variable then
+        new_context.data[dom_element.loop.bind_variable] = v
+      end
+      func(dom_element, new_context, ...)
+    end
+  else
+    func(dom_element, ezgui_object, ...)
+  end
+end
+
 -- Converts a string like "Hello {{ name }}" into "Hello Peter"
 local function inflate_text(tokens, ezgui_object)
   local str = ""
@@ -172,10 +258,21 @@ local function inflate_text(tokens, ezgui_object)
     if v.type == "text" then
       str = str .. v.value
     elseif v.type == "binding" then
-      str = str .. tostring(get_data_from_binding_chain(ezgui_object, v.target_chain))
+      str = str .. tostring(get_value_from_ezgui_object(ezgui_object, v.target_chain))
     end
   end
   return str
+end
+
+local function concat_table(t)
+  local s = ""
+  for i, v in ipairs(t) do
+    s = s .. ("'%s'"):format(v)
+    if next(t, i) then
+      s = s .. ", "
+    end
+  end
+  return s
 end
 
 return {
@@ -187,4 +284,9 @@ return {
   set_data_on_binding_chain = set_data_on_binding_chain,
   inflate_text = inflate_text,
   make_observable = make_observable,
+  get_value_from_ezgui_object = get_value_from_ezgui_object,
+  pairs = _pairs,
+  ipairs = _ipairs,
+  loop_call = loop_call,
+  concat_table = concat_table,
 }

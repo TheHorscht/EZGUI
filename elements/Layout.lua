@@ -2,6 +2,7 @@ dofile_once("data/scripts/lib/utilities.lua")
 dofile_once("%PATH%oop.lua")
 dofile_once("%PATH%parsing_functions.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
+local utils = dofile_once("%PATH%utils.lua")
 local DOMElement = dofile_once("%PATH%elements/DOMElement.lua")
 
 local Layout = new_class("Layout", function(self, xml_element, ezgui_object)
@@ -57,7 +58,7 @@ function Layout:GetContentDimensions(gui, ezgui_object)
   local content_height = 0
   for i, child in ipairs(self.children) do
     if not child.render_if or child.render_if() then
-      loop_call(child, ezgui_object, function(child, ezgui_object)
+      utils.loop_call(child, ezgui_object, function(child, ezgui_object)
         local child_content_width, child_content_height, child_outer_width, child_outer_height = child:GetDimensions(gui, ezgui_object)
         local child_total_width = child_outer_width + child.style.margin_left + child.style.margin_right
         local child_total_height = child_outer_height + child.style.margin_top + child.style.margin_bottom
@@ -131,7 +132,7 @@ function Layout:Render(gui, new_id, x, y, ezgui_object, layout)
   self.next_element_y = info.y + info.offset_y + info.border_size
   for i, child in ipairs(self.children) do
     if not child.render_if or child.render_if() then
-      loop_call(child, ezgui_object, function(child, ezgui_object)
+      utils.loop_call(child, ezgui_object, function(child, ezgui_object)
         local child_inner_width, child_inner_height, child_outer_width, child_outer_height = child:GetDimensions(gui, ezgui_object)
         local child_total_width = child_outer_width + child.style.margin_left + child.style.margin_right
         local child_total_height = child_outer_height + child.style.margin_top + child.style.margin_bottom

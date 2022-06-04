@@ -29,7 +29,28 @@
 -- end
 
 local lu = dofile_once("lib/luaunit.lua")
-teststring = nil -- This is a variable in data/scripts/lib/utilities.lua we need to clear so luaunit doesn't pick it up as a test
+
+local function catch_function_calls(func, ...)
+  local function_calls = {}
+  setfenv(func, setmetatable({}, {
+    __index = function(self, key)
+      if type(_G[key]) == "function" then
+        return function(...)
+          table.insert(function_calls, {
+            name = key,
+            args = {...}
+          })
+          return _G[key](...)
+        end
+      else
+        return _G[key]
+      end
+    end,
+    __newindex = _G,
+  }))
+  local return_values = {func(...)}
+  return function_calls, return_values
+end
 
 local function expect(actual)
   return {
@@ -89,6 +110,9 @@ local css = dofile_once("%PATH%css.lua")
 local utils = dofile_once("%PATH%utils.lua")
 local nxml = dofile_once("%PATH%lib/nxml.lua")
 local select = parser.parse_style_selector
+
+local Layout = dofile_once("%PATH%elements/Layout.lua")
+local Text = dofile_once("%PATH%elements/Text.lua")
 
 local s = select(" Layout > .cla > Button ")
 expect(s.name).to_be("Button")
@@ -322,8 +346,8 @@ lu.assertEquals(tokens, {
   { type = "identifier", value = "dood", },
 })
 
-local function make_data(data)
-  return { data = data }
+local function make_data(data, computed)
+  return { data = data, computed = computed or {} }
 end
 
 function testStuff()
@@ -351,8 +375,6 @@ function testText()
 end
 
 function test_Layout()
-  local Layout = dofile_once("%PATH%elements/Layout.lua")
-  local Text = dofile_once("%PATH%elements/Text.lua")
   local ezgui_object = {}
   local xml_element = nxml.parse([[
     <Layout><Text>Hello</Text></Layout>
@@ -423,6 +445,60 @@ function test_get_data_from_binding_chain()
   lu.assertEquals(utils.get_data_from_binding_chain(make_data({ one = { 1 } }), { "one", 1 }), 1)
 end
 
+function test_get_data_from_binding_chain_computed()
+  local ezgui_object = {
+    data = {},
+    computed = {
+      one = function() return 1 end
+    }
+  }
+  lu.assertEquals(utils.get_data_from_binding_chain(ezgui_object, { "one" }), 1)
+end
+
+function test_loop_call()
+  local ezgui_object = {
+    data = {
+      elements = {
+        { boop = 5 },
+        { boop = 8 },
+      },
+      d = { "a", "b", "c" }
+    },
+    computed = {
+      d = function() return { "A", "B", "C" } end
+    }
+  }
+  utils.make_observable(ezgui_object)
+
+  local text = Text(nxml.parse([[<Text forEach="element in elements">{{ element.boop }}</Text>]]), ezgui_object)
+  local call_count = 0
+  local values = {}
+  utils.loop_call(text, ezgui_object, function(text, ezgui_object)
+    call_count = call_count + 1
+    table.insert(values, utils.get_value_from_ezgui_object(ezgui_object, { "element", "boop" }))
+    table.insert(values, utils.get_value_from_ezgui_object(ezgui_object, { "d" })[ezgui_object.data.i])
+  end)
+  lu.assertEquals(call_count, 2)
+  lu.assertEquals(values, { 5, "A", 8, "B" })
+end
+
+function test_data_retrieval()
+  local ezgui_object = {
+    data = {
+      element = {
+        boop = "yes"
+      }
+    },
+    computed = {},
+  }
+  local text = Text(nxml.parse([[<Text>Hello {{ element.boop }} boopy</Text>]]), ezgui_object)
+  local function_calls, return_values = catch_function_calls(text.Render, text, {}, function() return 1 end, 0, 0, ezgui_object)
+  lu.assertTableContains(function_calls, {
+    name = "GuiText",
+    args = {{}, 0, 0, "Hello yes boopy"}
+  })
+end
+
 function test_set_data_on_binding_chain()
   local ezgui_object = {
     data = {
@@ -454,12 +530,44 @@ function test_set_data_on_binding_chain()
 end
 
 function test_inflate_text()
-  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello :)"), make_data({})), "Hello :)")
-  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ name }} whatever"), make_data({ name = "Peter"})), "Hello Peter whatever")
-  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ one.two.three }} boop"), make_data({ one = { two = { three = 3 }}})), "Hello 3 boop")
-  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ 1 }} shoop"), make_data({ "boop" })), "Hello boop shoop")
-  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ 1.1 }} gloop"), make_data({ { "boop" } })), "Hello boop gloop")
-  lu.assertEquals(utils.inflate_text(parser.parse_text("Hello {{ 1.meow.1 }} moop"), make_data({ { meow = { "boop" } } })), "Hello boop moop")
+  local i = utils.inflate_text
+  local p = parser.parse_text
+  local d = make_data
+  lu.assertEquals(i(p("He :)"), d({})), "He :)")
+  -- With data
+  lu.assertEquals(i(p("He {{ name }} wh"), d({ name = "Peter"})), "He Peter wh")
+  lu.assertEquals(i(p("He {{ one.two.three }} bo"), d({ one = { two = { three = 3 }}})), "He 3 bo")
+  lu.assertEquals(i(p("He {{ 1 }} sho"), d({ "bo" })), "He bo sho")
+  lu.assertEquals(i(p("He {{ 1.1 }} glo"), d({ { "bo" } })), "He bo glo")
+  lu.assertEquals(i(p("He {{ 1.meow.1 }} mo"), d({ { meow = { "bo" } } })), "He bo mo")
+  -- With computed
+  lu.assertEquals(i(p("He {{ bo }} mo"), d({}, { bo = function() return "bl" end })), "He bl mo")
 end
 
+function test_get_value_from_ezgui_object()
+  local ezgui_object = {
+    data = {
+      aaa = "aaa",
+      bbb = "bbb",
+      ccc = {
+        ddd = "ddd"
+      },
+      fff = { "ggg" },
+    },
+    computed = {
+      bbb = function() return "bbb_computed" end,
+      eee = function() return "eee" end,
+    }
+  }
+  lu.assertEquals(utils.get_value_from_ezgui_object(ezgui_object, "aaa"), "aaa")
+  lu.assertEquals(utils.get_value_from_ezgui_object(ezgui_object, "bbb"), "bbb_computed")
+  lu.assertEquals(utils.get_value_from_ezgui_object(ezgui_object, { "ccc", "ddd" }), "ddd")
+  lu.assertEquals(utils.get_value_from_ezgui_object(ezgui_object, { "fff", 1 }), "ggg")
+  lu.assertEquals(utils.get_value_from_ezgui_object(ezgui_object, "eee"), "eee")
+  lu.assertErrorMsgEquals("Data variable not found: 'hhh'", utils.get_value_from_ezgui_object, ezgui_object, "hhh")
+  lu.assertErrorMsgEquals("Data variable not found: 'aaa.bbb'", utils.get_value_from_ezgui_object, ezgui_object, { "aaa", "bbb" })
+end
+
+teststring = nil -- This is a variable in data/scripts/lib/utilities.lua we need to clear so luaunit doesn't pick it up as a test
 lu.LuaUnit.run()
+-- lu.LuaUnit.run("-p", "test_loop_call")

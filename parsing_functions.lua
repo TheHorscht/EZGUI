@@ -384,8 +384,8 @@ function parse_function_call_expression(input, error_callback)
     name = function_name,
     args = args,
     execute = function(ezgui_object, environment_variables)
-      if not ezgui_object.data[function_name] then
-        error("Function not found in data context: " .. function_name, 3)
+      if not ezgui_object.methods[function_name] then
+        error("Function not found in ezgui_object.methods: " .. function_name, 3)
       end
       local _args = {}
       -- Collect and package arguments
@@ -398,7 +398,7 @@ function parse_function_call_expression(input, error_callback)
         end
         table.insert(_args, arg.value)
       end
-      return setfenv(ezgui_object.data[function_name], setmetatable(environment_variables, {
+      return setfenv(ezgui_object.methods[function_name], setmetatable(environment_variables, {
         __index = _G,
         __newindex = _G
       }))(unpack(_args))

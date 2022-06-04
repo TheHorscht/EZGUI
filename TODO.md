@@ -1,5 +1,5 @@
 - Tooltips
-- Computed properties
+- Max width for elements, shorten text inside with "..."?
 - Extend function bindings by writing their content to a virtual file and dofile that and execute it inside context...?
 - Binding to mod settings
 - Block comments in CSS

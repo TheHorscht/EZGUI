@@ -7,11 +7,11 @@ local function verify_ezgui_object(ezgui_object)
   ezgui_object.watch = ezgui_object.watch or {}
   ezgui_object.computed = ezgui_object.computed or {}
   ezgui_object.methods = ezgui_object.methods or {}
-  -- for i, v in pairs(ezgui_object.data) do
-  --   if type(v) == "function" then
-  --     return "Please move your functions into 'ezgui_object.methods'"
-  --   end
-  -- end
+  for i, v in pairs(ezgui_object.data) do
+    if type(v) == "function" then
+      return "Please move your functions into 'ezgui_object.methods'"
+    end
+  end
 end
 
 return {
