@@ -262,7 +262,7 @@ function DOMElement:ReadAttribute(xml_element, name, value_default, converter, v
   local value
   local used_default = false
   if xml_element.attr[":" .. name] ~= nil then
-    value = self.ezgui_object.data[xml_element.attr[":" .. name]] -- TODO: What does this do again?
+    value = utils.get_value_from_ezgui_object(self.ezgui_object, parser.read_binding_target(xml_element.attr[":" .. name])) -- TODO: What does this do again?
     out = {
       type = "binding",
       target_chain = parser.read_binding_target(xml_element.attr[":" .. name])
