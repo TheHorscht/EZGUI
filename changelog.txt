@@ -3,7 +3,8 @@
   and also not use the margin system for it internally anymore.
 - Removed Button debug rendering for clickable area, since it's pretty much useless anyway, just set debug on the containing Layout
 - Add @change callback for Input and Text
-- BREAKING: You can now define a callback for when a data property got changed through any means
+- You can now define a callback for when a data property got changed through any means
+- Computed properties
 
 v0.2.0:
 - Images now support the @click attribute to basically create an ImageButton
