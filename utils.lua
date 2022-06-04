@@ -214,27 +214,7 @@ local function loop_call(dom_element, ezgui_object, func, ...)
     if not ezgui_object.data[dom_element.loop.binding_target] then
       error("Binding target not found: " .. dom_element.loop.binding_target)
     end
-    for i, v in ezgui_object.data[dom_element.loop.binding_target].__ipairs do
-      -- local proxy_data = {}
-      -- if dom_element.loop.iter_variable then
-      --   proxy_data[dom_element.loop.iter_variable] = i
-      -- end
-      -- if dom_element.loop.bind_variable then
-      --   proxy_data[dom_element.loop.bind_variable] = v
-      -- end
-      -- local new_context = setmetatable({}, {
-      --   __index = function(t, k)
-      --     if k == "computed" then
-      --       return ezgui_object.computed
-      --     elseif k == "data" then
-      --       return setmetatable({}, {
-      --         __index = function(t, k)
-      --           return proxy_data[k] or ezgui_object.data[k]
-      --         end
-      --       })
-      --     end
-      --   end
-      -- })
+    for i, v in _ipairs(ezgui_object.data[dom_element.loop.binding_target]) do
       local new_context = setmetatable({}, {
         __index = ezgui_object
       })
