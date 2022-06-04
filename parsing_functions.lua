@@ -387,6 +387,14 @@ function parse_function_call_expression(input, error_callback)
       if not ezgui_object.methods[function_name] then
         error("Function not found in ezgui_object.methods: " .. function_name, 3)
       end
+      environment_variables.self = setmetatable({}, {
+        __index = function(t, k)
+          return utils.get_value_from_ezgui_object(ezgui_object, { k })
+        end,
+        __newindex = function(t, k, v)
+          return utils.set_data_on_binding_chain(ezgui_object, { k }, v)
+        end,
+      })
       local _args = {}
       -- Collect and package arguments
       for i, arg in ipairs(args) do
