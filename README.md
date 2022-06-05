@@ -27,13 +27,34 @@ local ezgui_object = {
   data = {
     collection = { "Bloo", "Blaa", "Blee" },
     button_margin = 5,
+    show = true,
+  },
+  methods = {
+    toggle_visibility = function()
+      -- 'self' is automatically available in this function's environment and refers to a special version of the ezgui_object
+      -- which will get the specified value automatically from the correct sub-table (like data or computed)
+      self.show = not self.show
+    end,
     -- Methods defined here can be used in @click, two variables will be available within these functions:
-    -- 'self', refering to the data table and
+    -- 'self', allowing you to get properties defined on the ezgui_object
     -- 'element', the element that was clicked on
     add_button_margin = function(amount)
       print(element.name .. " was clicked!")
       self.button_margin = self.button_margin + amount
     end,
+  },
+  computed = {
+    -- Computed properties are kinda like data but can return values that need to be dynamically calculated
+    frame_num = function()
+      return GameGetFrameNum()
+    end
+  },
+  watch = {
+    -- Here you can specifiy ezgui_object.data variables (not computed for now) that you want to watch for changes
+    ["collection.1"] = function(new_value)
+      -- This function will run when data.collection[1] is being changed, the new value is passed in as the first argument
+      print("data.collection[1] was changed to: " .. new_value)
+    end
   }
 }
 
@@ -55,20 +76,31 @@ A button with text that you can click and execute functions. The text is determi
 - `@click`:function a function to call. It uses a primitive lua function parser and therefore only supports a syntax like this: `function_name('a string', 5)`
 
 ## Image
-Render an image.
+Renders an image.
 ### Attributes:
 - `src`:string - The path to the image file
 - `scaleX`:number - Stretch the image on the x axis
 - `scaleY`:number - Stretch the image on the y axis
 ## Slider
-Render a slider.
+Renders a slider.
 ### Attributes:
 - `bind` - The data context variable to bind to
 - `min`:number
 - `max`:number
+- `default`:number - The value it will set when the slider is right-clicked
 - `precision`:number - Number of digits to show after the decimal point
 ## Text
 Render some text. Example `<Text>Hello</Text>`
+
+Also supports multi line text!
+
+```
+<Text>
+Line 1
+Line 2
+etc
+</Text>
+```
 
 ## Input
 For getting user input. Example `<Input bind="name"></Input>`
@@ -76,6 +108,30 @@ For getting user input. Example `<Input bind="name"></Input>`
 - `bind` - The data context variable to bind to
 - `max_length`:number - Maximum number of allowed characters
 - `allowed_characters`:string - Example: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+`
+# Data binding
+You can bind every attribute to a variable defined either on `ezgui_object.data` or `ezgui_object.computed`. To set a binding instead of a concrete value, prefix the attribute with a colon `:`
+For example:
+```xml
+<Image :src="img" />
+```
+```lua
+local ezgui_object = {
+  data = {
+    img = "data/debug/circle_16.png"
+  },
+  -- Or
+  computed = {
+    img = function()
+      if GameGetFrameNum() < 300 then
+        return "data/debug/circle_16.png"
+      else
+        return "data/debug/circle_56.png"
+      end
+    end
+  },
+}
+```
 
 # Styling / Pseudo-CSS
 The framework uses a custom implementation of CSS based solely on my own assumptions on how CSS works. It tries to mimic it without meeting any official specifications. Because it's custom made, it only implements a small subset of selectors and only a handful of properties. There are no IDs, only classes.
@@ -88,10 +144,10 @@ The framework uses a custom implementation of CSS based solely on my own assumpt
 
 And of course you can combine them like: `Layout.classname > Button Text.otherclass`
 
-Margin and padding should work just like the CSS Box Model https://www.w3schools.com/css/css_boxmodel.asp
+Margin and padding work similar to the CSS Box Model https://www.w3schools.com/css/css_boxmodel.asp
 
 There are also the CSS properties `width` and `height`, which only take effect if they're bigger than the elements calculated size.
-Can be used to set the size of an element to a specific size, if the size is bigger than it's content, you can use `align_self_horizontal`
+Can be used to set the size of an element to a specific size. If the size is bigger than it's content, you can use `align_self_horizontal`
 and `align_self_vertical` to align its content, kind of like `text-align` in real CSS, but also vertical.
 
 ![alt text](www/assets/box_model.png "Title")
