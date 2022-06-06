@@ -118,7 +118,7 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, ezgui_obj
       if attr:match("%(") then
         local func = parse_function_call_expression(attr)
         self[prop] = function()
-          return func.execute(ezgui_object, self)
+          return func.execute(ezgui_object, { self = self, })
         end
       else
         self[prop] = function()

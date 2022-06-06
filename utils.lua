@@ -189,6 +189,9 @@ local function get_value_from_ezgui_object(ezgui_object, target)
   if computed then
     return computed()
   end
+  if ezgui_object.methods and ezgui_object.methods[target[1]] then
+    return ezgui_object.methods[target[1]]
+  end
   local current_data = ezgui_object.data
   local target_chain = ""
   for i, current_target in ipairs(target) do
