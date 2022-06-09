@@ -14,9 +14,17 @@ end
 
 return {
   init = function(self_path)
+    local mod_id = ""
     if self_path then
+      if not self_path:find("^mods/") then
+        error("The EZGUI framework needs to be somewhere in mods/yourmodid/ and not data/")
+      end
       -- Remove trailing / at the end and add it again to allow both versions
       self_path = self_path:gsub("/$", "") .. "/"
+      mod_id = ({self_path:match("^(mods/)([^\\/]*)/")})[2]
+      if not mod_id then
+        error("EZGUI.init(lib_path) Could not get mod id from path")
+      end
       local files = {
         ("%scss_props.lua"):format(self_path),
         ("%scss.lua"):format(self_path),
@@ -37,6 +45,11 @@ return {
         local s = content:gsub("%%PATH%%", self_path)
         ModTextFileSetContent(filepath, s)
       end
+
+      local utils_path = ("%sutils.lua"):format(self_path)
+      local content = ModTextFileGetContent(utils_path)
+      local s = content:gsub("%%MOD_ID%%", mod_id)
+      ModTextFileSetContent(utils_path, s)
     end
 
     self_path = self_path and self_path or ""

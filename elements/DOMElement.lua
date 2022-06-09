@@ -112,6 +112,12 @@ local DOMElement = new_class("DOMElement", function(self, xml_element, ezgui_obj
       return false
     end
   end)
+  self:ReadAttribute(xml_element, "scope", nil, function(val)
+    if not utils.mod_setting_scope_enums[val] then
+      error(("(%s:%s) is not a valid option for 'scope'. Valid options are: NEW_GAME, RUNTIME_RESTART or RUNTIME"):format(val, type(val)))
+    end
+    return utils.mod_setting_scope_enums[val]
+  end)
   local function read_func(prop, attr)
     local attr = xml_element.attr[attr]
     if attr then
@@ -257,7 +263,7 @@ function DOMElement:GetZ()
   return z
 end
 
-function DOMElement:ReadAttribute(xml_element, name, value_default, converter, validator)
+function DOMElement:ReadAttribute(xml_element, name, value_default, converter)
   local out
   local value
   local used_default = false
@@ -283,9 +289,6 @@ function DOMElement:ReadAttribute(xml_element, name, value_default, converter, v
       type = "value",
       value = value_default
     }
-  end
-  if type(validator) == "function" then
-    validator(name, value)
   end
   self.attr[name] = out
 end

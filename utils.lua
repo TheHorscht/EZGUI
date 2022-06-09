@@ -258,6 +258,31 @@ local function concat_table(t)
   return s
 end
 
+local mod_id = mod_id or "%MOD_ID%" -- mod_id gets filled in by the build script and %MOD_ID% gets filled in by init() in EZGUI.lua
+local mod_setting_scope_enums = { NEW_GAME = 0, RUNTIME_RESTART = 1, RUNTIME = 2 }
+local function get_setting_id(key)
+  return mod_id .. "." .. key
+end
+
+local function setting_set(key, value, is_default)
+  is_default = not not is_default
+  if IS_MOD_SETTINGS then
+    ModSettingSetNextValue(get_setting_id(key), value, is_default)
+  else
+    if not is_default or (is_default and ModSettingGet(get_setting_id(key)) == nil) then
+      ModSettingSet(get_setting_id(key), value)
+      ModSettingSetNextValue(get_setting_id(key), value, is_default)
+    end
+  end
+end
+
+local function setting_get(key, default)
+  if default == nil then
+    error("setting_get(key, default): 2nd argument 'default' is required")
+  end
+  return ModSettingGet(get_setting_id(key)) or default
+end
+
 return {
   split_lines = split_lines,
   throw_error = throw_error,
@@ -272,4 +297,8 @@ return {
   ipairs = _ipairs,
   loop_call = loop_call,
   concat_table = concat_table,
+  mod_setting_scope_enums = mod_setting_scope_enums,
+  setting_set = setting_set,
+  setting_get = setting_get,
+  get_setting_id = get_setting_id,
 }

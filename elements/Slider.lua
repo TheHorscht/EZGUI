@@ -14,6 +14,12 @@ local Slider = new_class("Slider", function(self, xml_element, ezgui_object)
     self.onChange = parse_function_call_expression(xml_element.attr["@change"])
   end
   self.min_width = 30
+  -- if binding to setting, set the mod setting to it's default value and set the data variable to the setting/default
+  if self.attr.scope then
+    utils.setting_set(table.concat(self.binding_target.target_chain, "."), tonumber(self.attr.default), true)
+    local val = utils.setting_get(table.concat(self.binding_target.target_chain, "."), tonumber(self.attr.default))
+    utils.set_data_on_binding_chain(ezgui_object, self.binding_target.target_chain, val)
+  end
 end, DOMElement)
 
 Slider.default_style = {
@@ -52,6 +58,9 @@ function Slider:Render(gui, new_id, x, y, ezgui_object, layout)
         element = self,
         value = new_value
       })
+    end
+    if self.attr.scope then
+      utils.setting_set(table.concat(self.binding_target.target_chain, "."), tonumber(new_value))
     end
   end
   GuiZSetForNextWidget(gui, info.z)

@@ -1,14 +1,27 @@
-if not (arg[1] and arg[2]) then
-  error("Correct usage: luajit build.lua <in.xml> <settings_out.lua>")
-end
+local build_config = dofile("build_config.lua")
+
+if not build_config.mod_id then error("build_config.mod_id is required") end
+if not build_config.data_path then error("build_config.data_path is required") end
+if not build_config.gui_xml_path then error("build_config.gui_xml_path is required") end
+if not build_config.out_file then error("build_config.out_file is required") end
+
+local mod_id = build_config.mod_id
+local data_path = build_config.data_path
+local gui_xml_path = build_config.gui_xml_path
+local out_file = build_config.out_file
+
+-- Remove trailing slash and add it again, so we always end up with a path with a slash at the end
+data_path = data_path:gsub("/$", ""):gsub("\\$", "") .. "\\"
 
 local cache = {}
 local out = [[
+IS_MOD_SETTINGS = true
 local __dofile_cache = {}
-
 ]]
+out = out .. ([[mod_id = "%s"]] .. "\n"):format(mod_id)
+
 local function stitch_file(path)
-  local actual_file_path = path:gsub("^data/", "C:\\Users\\Christian\\AppData\\LocalLow\\Nolla_Games_Noita\\data\\")
+  local actual_file_path = path:gsub("^data/", data_path)
   local file = assert(io.open(actual_file_path, "rb"))
   local content = file:read("*a")
   content = content:gsub("%%PATH%%", "")
@@ -46,7 +59,7 @@ for i, path in ipairs(files_to_bundle) do
 end
 
 local nxml = dofile("lib/nxml.lua")
-local f = assert(io.open(arg[1], "rb"))
+local f = assert(io.open(gui_xml_path, "rb"))
 local gui_xml = f:read("*a")
 f:close()
 local gui_nxml = nxml.parse_many(gui_xml)
@@ -59,7 +72,7 @@ function serializeTable(val, name, skipnewlines, depth)
   local tmp = string.rep(skipnewlines and "" or " ", depth)
   if type(name) == "number" then
     name = "[" .. name .. "]"
-  elseif name and name:find("^@") then
+  elseif name and (name:find("^@") or name:find("^:")) then
     name = "['" .. name .. "']"
   end
   if name then tmp = tmp .. name .. " = " end
@@ -92,11 +105,39 @@ function serializeTable(val, name, skipnewlines, depth)
   return tmp
 end
 
+local utils = dofile("utils.lua")
+local mod_settings = {}
+local function get_mod_settings_recursive(nxml_element)
+  if nxml_element.attr and nxml_element.attr.bind and nxml_element.attr.scope then
+    table.insert(mod_settings, { id = nxml_element.attr.bind, scope = nxml_element.attr.scope, default = nxml_element.attr.default })
+  end
+  for child in nxml_element:each_child() do
+    get_mod_settings_recursive(child)
+  end
+end
+get_mod_settings_recursive(gui_nxml[1])
+
+out = out .. "local settings = {\n"
+for i, v in ipairs(mod_settings) do
+  local default = v.default
+  if tonumber(default) then
+    default = tonumber(default)
+  else
+    default = ([["%s"]]):format(default)
+  end
+  out = out .. ([[  { id = "%s", scope = %s, default = %s },]] .. "\n"):format(v.id, utils.mod_setting_scope_enums[v.scope], default)
+end
+out = out .. "}"
+
 local serialized_gui_xml = serializeTable(gui_nxml, nil, true)
 
 out = out .. "\nlocal content = {\n  xml = " .. serialized_gui_xml .. ",\n  xml_string = [[" .. gui_xml .. "]]\n}\n"
 
-local file = assert(io.open(arg[2], "wb"))
+local f = assert(io.open("settings_template.lua", "rb"))
+local settings_template = f:read("*a")
+f:close()
+
+local file = assert(io.open(out_file, "wb"))
 file:write(out .. [[
 
 function dofile(path)
@@ -111,49 +152,6 @@ function dofile_once(path)
   end
   return __dofile_cache[path]()
 end
+]] .. settings_template)
 
-local render_gui = dofile_once("EZGUI.lua").init()
-local data = {
-  counter = 1,
-  elements = {
-    "Bloo", "Blaa", "Blee",
-  },
-  align_items_horizontal = "center",
-  align_items_vertical = "top",
-  direction = "vertical",
-  margin_left = 0,
-  margin_top = 0,
-  margin_right = 0,
-  margin_bottom = 0,
-  padding_left = 0,
-  padding_top = 0,
-  padding_right = 0,
-  button_margin = 0,
-  padding_bottom = 0,
-  ip = "123.123.123.133",
-  port = 80,
-  set_align_items_horizontal = function(data, element, alignment)
-    data.align_items_horizontal = alignment
-  end,
-  set_align_items_vertical = function(data, element, alignment)
-    data.align_items_vertical = alignment
-  end,
-  set_direction = function(data, element, direction)
-    data.direction = direction
-  end,
-}
-
-function ModSettingsGuiCount()
-  return 1
-end
-
-function ModSettingsGui( gui, in_main_menu )
-  GuiText(gui, 0, 0, "")
-  local clicked, right_clicked, hovered, x, y, width, height, draw_x, draw_y, draw_width, draw_height = GuiGetPreviousWidgetInfo(gui)
-  GuiOptionsAdd(gui, GUI_OPTION.Layout_NoLayouting)
-  local width, height = render_gui(draw_x, draw_y, content, data, gui)
-  GuiOptionsRemove(gui, GUI_OPTION.Layout_NoLayouting)
-  GuiText(gui, 0, height, "")
-end
-]])
 file:close()

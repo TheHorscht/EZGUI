@@ -12,8 +12,15 @@ local Input = new_class("Input", function(self, xml_element, ezgui_object)
   self.min_width = 30
   self:ReadAttribute(xml_element, "max_length", 30)
   self:ReadAttribute(xml_element, "allowed_characters", "")
+  self:ReadAttribute(xml_element, "default", "")
   if xml_element.attr["@change"] then
     self.onChange = parse_function_call_expression(xml_element.attr["@change"])
+  end
+  -- if binding to setting, set the mod setting to it's default value and set the data variable to the setting/default
+  if self.attr.scope then
+    utils.setting_set(table.concat(self.binding_target.target_chain, "."), self.attr.default, true)
+    local val = utils.setting_get(table.concat(self.binding_target.target_chain, "."), self.attr.default)
+    utils.set_data_on_binding_chain(ezgui_object, self.binding_target.target_chain, val)
   end
 end, DOMElement)
 
@@ -42,6 +49,9 @@ function Input:Render(gui, new_id, x, y, ezgui_object, layout)
         element = self,
         value = new_text
       })
+    end
+    if self.attr.scope then
+      utils.setting_set(table.concat(self.binding_target.target_chain, "."), new_text)
     end
   end
 end

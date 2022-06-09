@@ -1,7 +1,8 @@
+- Binding to mod settings
 - Tooltips
+- Shortcut for slider min max default: range="0 50 100", min default max
 - Max width for elements, shorten text inside with "..."?
 - Extend function bindings by writing their content to a virtual file and dofile that and execute it inside context...?
-- Binding to mod settings
 - Block comments in CSS
 
 - Parse bound data like color = "#FFFFFF" and do it again whenever it changes?...
