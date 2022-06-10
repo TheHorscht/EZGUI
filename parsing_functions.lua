@@ -2,7 +2,7 @@ local utils = dofile_once("%PATH%utils.lua")
 local string_buffer = dofile_once("%PATH%string_buffer.lua")
 
 local dom_element_names = {
-  "Layout", "Text", "Input", "Button", "Image", "Slider", "*"
+  "Layout", "Text", "Input", "Button", "Image", "Slider", "Checkbox", "*"
 }
 
 local function _throw_error(str, msg, pos, level)

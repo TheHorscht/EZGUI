@@ -89,6 +89,11 @@ Renders a slider.
 - `max`:number
 - `default`:number - The value it will set when the slider is right-clicked
 - `precision`:number - Number of digits to show after the decimal point
+## Checkbox
+Renders a checkbox. The contents will be shown as a label.
+### Attributes:
+- `bind` - The data context variable to bind to
+- `default`:number - The value it will set when the slider is right-clicked
 ## Text
 Render some text. Example `<Text>Hello</Text>`
 

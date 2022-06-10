@@ -50,6 +50,7 @@ local files_to_bundle = {
   "elements/Image.lua",
   "elements/Layout.lua",
   "elements/Slider.lua",
+  "elements/Checkbox.lua",
   "elements/Text.lua",
   "data/scripts/lib/utilities.lua",
 }

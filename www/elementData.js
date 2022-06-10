@@ -88,6 +88,11 @@ local ezgui_object = {
       description: "A slider :)",
     },
     {
+      name: "Checkbox",
+      attributes: [],
+      description: "A checkbox.",
+    },
+    {
       name: "Text",
       description: "Self explanatory, really.",
     },

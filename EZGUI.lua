@@ -39,6 +39,7 @@ return {
         ("%selements/Button.lua"):format(self_path),
         ("%selements/Image.lua"):format(self_path),
         ("%selements/Slider.lua"):format(self_path),
+        ("%selements/Checkbox.lua"):format(self_path),
       }
       for i, filepath in ipairs(files) do
         local content = ModTextFileGetContent(filepath)
@@ -61,6 +62,7 @@ return {
     local Button = dofile_once(self_path .. "elements/Button.lua")
     local Image = dofile_once(self_path .. "elements/Image.lua")
     local Slider = dofile_once(self_path .. "elements/Slider.lua")
+    local Checkbox = dofile_once(self_path .. "elements/Checkbox.lua")
     local nxml = dofile_once(self_path .. "lib/nxml.lua")
     local utils = dofile_once(self_path .. "utils.lua")
     local css = dofile_once(self_path .. "css.lua")
@@ -72,6 +74,7 @@ return {
       Button = Button,
       Image = Image,
       Slider = Slider,
+      Checkbox = Checkbox,
       Input = Input,
     }
 

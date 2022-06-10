@@ -2,8 +2,8 @@ local utils = dofile_once("utils.lua")
 local render_gui = dofile_once("EZGUI.lua").init()
 local ezgui_object = {
   data = {
+    toggle_value = false,
     counter = 1,
-    name = "boop",
     elements = {
       "Bloo", "Blaa", "Blee",
     },
@@ -128,6 +128,9 @@ local ezgui_object = {
         self.img = "data/debug/circle_16.png"
       end
     end,
+    value_changed = function()
+      print("New value is: " .. tostring(value))
+    end
   },
   computed = {
     show_this = function()
