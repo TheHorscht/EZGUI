@@ -46,9 +46,9 @@ function Slider:Render(gui, new_id, x, y, ezgui_object, layout)
   local info = self:PreRender(gui, new_id, x, y, ezgui_object, layout)
   local value = utils.get_value_from_chain_or_not(ezgui_object, self.binding_target)
   value = tonumber(value) or 0
-  GuiZSetForNextWidget(gui, info.z)
   local slider_width, text_width = get_slider_and_text_width(self)
   local old_value = value
+  GuiZSetForNextWidget(gui, info.z)
   local new_value = GuiSlider(gui, new_id(), info.x + info.offset_x + info.border_size + self.style.padding_left - 2, info.y + info.offset_y + info.border_size + self.style.padding_top, "", value, self.attr.min, self.attr.max, self.attr.default, 1, " ", slider_width)
   if math.abs(new_value - old_value) > 0.001 then
     utils.set_data_on_binding_chain(ezgui_object, self.binding_target.target_chain, new_value)
